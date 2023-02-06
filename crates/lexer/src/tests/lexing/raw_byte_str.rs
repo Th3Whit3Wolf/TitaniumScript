@@ -1,7 +1,4 @@
-use crate::{
-    token_kind::{Base, LiteralKind},
-    TokenKind,
-};
+use crate::{token_kind::LiteralKind, TokenKind};
 
 use super::check;
 

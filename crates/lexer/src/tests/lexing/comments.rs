@@ -1,5 +1,3 @@
-use crate::{token_kind::LiteralKind, TokenKind};
-
 use super::check_lexing;
 use expect_test::expect;
 

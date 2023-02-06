@@ -16,7 +16,6 @@ mod single_line {
 
     #[test]
     fn unterminated() {
-        let str = r#"b"a"#;
         check(
             r#"b"a"#,
             TokenKind::Literal(LiteralKind::ByteStr { terminated: false }),
