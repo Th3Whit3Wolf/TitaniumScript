@@ -32,6 +32,8 @@ pub fn check(input: &str, expected: TokenKind) {
 }
 
 pub fn check_lexing(src: &str, expect: Expect) {
-    let actual: String = Lexer::new(src).map(|token| format!("{token:?}\n")).collect();
+    let actual: String = Lexer::new(src)
+        .map(|token| format!("{token:?}\n"))
+        .collect();
     expect.assert_eq(&actual)
 }

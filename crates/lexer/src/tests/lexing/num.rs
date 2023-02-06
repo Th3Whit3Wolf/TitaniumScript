@@ -13,7 +13,10 @@ mod binary {
     fn lower() {
         check(
             "0b1010",
-            TokenKind::Literal(LiteralKind::Num { base: Base::Binary, empty_int: false }),
+            TokenKind::Literal(LiteralKind::Num {
+                base: Base::Binary,
+                empty_int: false,
+            }),
         )
     }
 
@@ -21,18 +24,33 @@ mod binary {
     fn upper() {
         check(
             "0B1010",
-            TokenKind::Literal(LiteralKind::Num { base: Base::Binary, empty_int: false }),
+            TokenKind::Literal(LiteralKind::Num {
+                base: Base::Binary,
+                empty_int: false,
+            }),
         )
     }
 
     #[test]
     fn empty_lower() {
-        check("0b", TokenKind::Literal(LiteralKind::Num { base: Base::Binary, empty_int: true }))
+        check(
+            "0b",
+            TokenKind::Literal(LiteralKind::Num {
+                base: Base::Binary,
+                empty_int: true,
+            }),
+        )
     }
 
     #[test]
     fn empty_upper() {
-        check("0B", TokenKind::Literal(LiteralKind::Num { base: Base::Binary, empty_int: true }))
+        check(
+            "0B",
+            TokenKind::Literal(LiteralKind::Num {
+                base: Base::Binary,
+                empty_int: true,
+            }),
+        )
     }
 }
 
@@ -42,22 +60,46 @@ mod octal {
 
     #[test]
     fn lower() {
-        check("0o123", TokenKind::Literal(LiteralKind::Num { base: Base::Octal, empty_int: false }))
+        check(
+            "0o123",
+            TokenKind::Literal(LiteralKind::Num {
+                base: Base::Octal,
+                empty_int: false,
+            }),
+        )
     }
 
     #[test]
     fn upper() {
-        check("0O123", TokenKind::Literal(LiteralKind::Num { base: Base::Octal, empty_int: false }))
+        check(
+            "0O123",
+            TokenKind::Literal(LiteralKind::Num {
+                base: Base::Octal,
+                empty_int: false,
+            }),
+        )
     }
 
     #[test]
     fn empty_lower() {
-        check("0o", TokenKind::Literal(LiteralKind::Num { base: Base::Octal, empty_int: true }))
+        check(
+            "0o",
+            TokenKind::Literal(LiteralKind::Num {
+                base: Base::Octal,
+                empty_int: true,
+            }),
+        )
     }
 
     #[test]
     fn empty_upper() {
-        check("0O", TokenKind::Literal(LiteralKind::Num { base: Base::Octal, empty_int: true }))
+        check(
+            "0O",
+            TokenKind::Literal(LiteralKind::Num {
+                base: Base::Octal,
+                empty_int: true,
+            }),
+        )
     }
 }
 
@@ -67,7 +109,13 @@ mod decimal {
 
     #[test]
     fn lower() {
-        check("200", TokenKind::Literal(LiteralKind::Num { base: Base::Decimal, empty_int: false }))
+        check(
+            "200",
+            TokenKind::Literal(LiteralKind::Num {
+                base: Base::Decimal,
+                empty_int: false,
+            }),
+        )
     }
 }
 
@@ -79,7 +127,10 @@ mod hexadecimal {
     fn lower() {
         check(
             "0x123AF",
-            TokenKind::Literal(LiteralKind::Num { base: Base::Hexadecimal, empty_int: false }),
+            TokenKind::Literal(LiteralKind::Num {
+                base: Base::Hexadecimal,
+                empty_int: false,
+            }),
         )
     }
 
@@ -87,7 +138,10 @@ mod hexadecimal {
     fn upper() {
         check(
             "0XAF12321fa",
-            TokenKind::Literal(LiteralKind::Num { base: Base::Hexadecimal, empty_int: false }),
+            TokenKind::Literal(LiteralKind::Num {
+                base: Base::Hexadecimal,
+                empty_int: false,
+            }),
         )
     }
 
@@ -95,7 +149,10 @@ mod hexadecimal {
     fn empty_lower() {
         check(
             "0x",
-            TokenKind::Literal(LiteralKind::Num { base: Base::Hexadecimal, empty_int: true }),
+            TokenKind::Literal(LiteralKind::Num {
+                base: Base::Hexadecimal,
+                empty_int: true,
+            }),
         )
     }
 
@@ -103,7 +160,10 @@ mod hexadecimal {
     fn empty_upper() {
         check(
             "0X",
-            TokenKind::Literal(LiteralKind::Num { base: Base::Hexadecimal, empty_int: true }),
+            TokenKind::Literal(LiteralKind::Num {
+                base: Base::Hexadecimal,
+                empty_int: true,
+            }),
         )
     }
 }

@@ -8,13 +8,19 @@ mod single_line {
 
     #[test]
     fn terminated() {
-        check(r#"b"a""#, TokenKind::Literal(LiteralKind::ByteStr { terminated: true }))
+        check(
+            r#"b"a""#,
+            TokenKind::Literal(LiteralKind::ByteStr { terminated: true }),
+        )
     }
 
     #[test]
     fn unterminated() {
         let str = r#"b"a"#;
-        check(r#"b"a"#, TokenKind::Literal(LiteralKind::ByteStr { terminated: false }))
+        check(
+            r#"b"a"#,
+            TokenKind::Literal(LiteralKind::ByteStr { terminated: false }),
+        )
     }
 }
 

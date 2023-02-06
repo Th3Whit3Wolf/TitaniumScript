@@ -9,12 +9,18 @@ mod single_line {
 
     #[test]
     fn terminated() {
-        check(r#"'a'"#, TokenKind::Literal(LiteralKind::Char { terminated: true }))
+        check(
+            r#"'a'"#,
+            TokenKind::Literal(LiteralKind::Char { terminated: true }),
+        )
     }
 
     #[test]
     fn unterminated() {
-        check(r#"'a"#, TokenKind::Literal(LiteralKind::Char { terminated: false }))
+        check(
+            r#"'a"#,
+            TokenKind::Literal(LiteralKind::Char { terminated: false }),
+        )
     }
 }
 

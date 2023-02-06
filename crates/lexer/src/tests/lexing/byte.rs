@@ -9,12 +9,18 @@ mod single_line {
 
     #[test]
     fn terminated() {
-        check("b'a'", TokenKind::Literal(LiteralKind::Byte { terminated: true }))
+        check(
+            "b'a'",
+            TokenKind::Literal(LiteralKind::Byte { terminated: true }),
+        )
     }
 
     #[test]
     fn unterminated() {
-        check("b'a", TokenKind::Literal(LiteralKind::Byte { terminated: false }))
+        check(
+            "b'a",
+            TokenKind::Literal(LiteralKind::Byte { terminated: false }),
+        )
     }
 }
 
