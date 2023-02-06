@@ -1,0 +1,19 @@
+[package]
+name = "lexer"
+version = "0.1.0"
+description = """
+Titaniumscript lexer used by ttsc. No stability guarantees are provided.
+"""
+
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+logos = "0.12.1"
+text-size = "1.1.0"
+
+
+[dev-dependencies]
+expect-test = "1.4.0"
