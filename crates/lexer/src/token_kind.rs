@@ -80,6 +80,34 @@ pub enum TokenKind {
     #[regex(r#"br[\w]*#[\w]*#*""#, LiteralKind::lex_raw_byte_str)]
     Literal(LiteralKind),
 
+    #[token("as", |_| Keywords::As)]
+    #[token("async", |_| Keywords::Async)]
+    #[token("await", |_| Keywords::Await)]
+    #[token("break", |_| Keywords::Break)]
+    #[token("const", |_| Keywords::Const)]
+    #[token("continue", |_| Keywords::Continue)]
+    #[token("else", |_| Keywords::Else)]
+    #[token("enum", |_| Keywords::Enum)]
+    #[token("export", |_| Keywords::Export)]
+    #[token("false", |_| Keywords::False)]
+    #[token("fn", |_| Keywords::Fn)]
+    #[token("for", |_| Keywords::For)]
+    #[token("if", |_| Keywords::If)]
+    #[token("impl", |_| Keywords::Impl)]
+    #[token("import", |_| Keywords::Import)]
+    #[token("in", |_| Keywords::In)]
+    #[token("let", |_| Keywords::Let)]
+    #[token("loop", |_| Keywords::Loop)]
+    #[token("match", |_| Keywords::Match)]
+    #[token("self", |_| Keywords::SelfLower)]
+    #[token("Self", |_| Keywords::SelfUpper)]
+    #[token("trait", |_| Keywords::Trait)]
+    #[token("true", |_| Keywords::True)]
+    #[token("type", |_| Keywords::Type)]
+    #[token("where", |_| Keywords::Where)]
+    #[token("while", |_| Keywords::While)]
+    Keyword(Keywords),
+
     // One-char tokens:
     /// ";"
     #[token(";")]
@@ -369,6 +397,36 @@ pub enum Base {
     Decimal = 10,
     /// Literal starts with "0x".
     Hexadecimal = 16,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Keywords {
+    As,
+    Async,
+    Await,
+    Break,
+    Const,
+    Continue,
+    Else,
+    Enum,
+    Export,
+    False,
+    Fn,
+    For,
+    If,
+    Impl,
+    Import,
+    In,
+    Let,
+    Loop,
+    Match,
+    SelfLower,
+    SelfUpper,
+    Trait,
+    True,
+    Type,
+    Where,
+    While,
 }
 
 /// Eats double-quoted string and returns true
