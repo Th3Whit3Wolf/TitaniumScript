@@ -1,7 +1,7 @@
 use logos::internal::LexerInternal;
 use logos::{Lexer, Logos};
 
-#[derive(Debug, Copy, Clone, PartialEq, Logos)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Logos)]
 #[logos(subpattern decimal = r"[0-9][_0-9]*")]
 #[logos(subpattern hex = r"[0-9a-fA-F][_0-9a-fA-F]*")]
 #[logos(subpattern octal = r"[0-7][_0-7]*")]
@@ -64,14 +64,14 @@ pub enum TokenKind {
     #[regex("0[xX](?&hex)", |_|  LiteralKind::Num { base: Base::Hexadecimal, empty_int: false })]
     #[token("0x", |_|  LiteralKind::Num { base: Base::Hexadecimal, empty_int: true })]
     #[token("0X", |_|  LiteralKind::Num { base: Base::Hexadecimal, empty_int: true })]
-    #[regex(r#"0[bB](?&binary)\.(?&binary)"#, |_| LiteralKind::Float { base: Base::Binary, empty_exponent: true})]
-    #[regex(r#"0[bB](?&binary)((?&exp)|(\.(?&binary)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Binary, empty_exponent: false})]
-    #[regex(r#"0[oO](?&octal)\.(?&octal)"#, |_| LiteralKind::Float { base: Base::Octal, empty_exponent: true})]
-    #[regex(r#"0[oO](?&octal)((?&exp)|(\.(?&octal)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Octal, empty_exponent: false})]
-    #[regex(r#"[+-]?((?&decimal)\.(?&decimal)|(\.(?&decimal)))"#, |_| LiteralKind::Float { base: Base::Decimal, empty_exponent: true})]
-    #[regex(r#"[+-]?(((?&decimal)\.(?&decimal)(?&exp))|(\.(?&decimal)(?&exp))|((?&decimal)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Decimal, empty_exponent: false})]
-    #[regex(r#"0[xX](?&hex)\.(?&hex)"#, |_| LiteralKind::Float { base: Base::Hexadecimal, empty_exponent: true})]
-    #[regex(r#"0[xX](?&hex)((?&exp)|(\.(?&hex)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Hexadecimal, empty_exponent: false})]
+    #[regex(r#"0[bB](((?&binary)\.(?&decimal)[eE][+-]?)|((?&binary)[eE][+-]?))"#, |_| LiteralKind::Float { base: Base::Binary, empty_exponent: true})]
+    #[regex(r#"0[bB](((?&binary)\.(?&decimal)(?&exp))|(?&binary)\.(?&decimal)|((?&binary)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Binary, empty_exponent: false})]
+    #[regex(r#"0[oO](((?&octal)\.(?&decimal)[eE][+-]?)|((?&octal)[eE][+-]?))"#, |_| LiteralKind::Float { base: Base::Octal, empty_exponent: true})]
+    #[regex(r#"0[oO](((?&octal)\.(?&decimal)(?&exp))|(?&octal)\.(?&decimal)|((?&octal)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Octal, empty_exponent: false})]
+    #[regex(r#"[-]?(((?&decimal)\.(?&decimal)[eE][+-]?)|((?&decimal)[eE][+-]?))"#, |_| LiteralKind::Float { base: Base::Decimal, empty_exponent: true})]
+    #[regex(r#"[-]?(((?&decimal)\.(?&decimal)(?&exp))|(?&decimal)\.(?&decimal)|((?&decimal)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Decimal, empty_exponent: false})]
+    #[regex(r#"0[xX](((?&hex)\.(?&decimal)[eE][+-]?)|((?&hex)[eE][+-]?))"#, |_| LiteralKind::Float { base: Base::Hexadecimal, empty_exponent: true})]
+    #[regex(r#"0[xX](((?&hex)\.(?&decimal)(?&exp))|(?&hex)\.(?&decimal)|((?&hex)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Hexadecimal, empty_exponent: false})]
     #[token("\"", LiteralKind::lex_str)]
     #[token("'", LiteralKind::lex_char)]
     #[token("b'", LiteralKind::lex_byte)]
@@ -80,33 +80,33 @@ pub enum TokenKind {
     #[regex(r#"br[\w]*#[\w]*#*""#, LiteralKind::lex_raw_byte_str)]
     Literal(LiteralKind),
 
-    #[token("as", |_| Keywords::As)]
-    #[token("async", |_| Keywords::Async)]
-    #[token("await", |_| Keywords::Await)]
-    #[token("break", |_| Keywords::Break)]
-    #[token("const", |_| Keywords::Const)]
-    #[token("continue", |_| Keywords::Continue)]
-    #[token("else", |_| Keywords::Else)]
-    #[token("enum", |_| Keywords::Enum)]
-    #[token("export", |_| Keywords::Export)]
-    #[token("false", |_| Keywords::False)]
-    #[token("fn", |_| Keywords::Fn)]
-    #[token("for", |_| Keywords::For)]
-    #[token("if", |_| Keywords::If)]
-    #[token("impl", |_| Keywords::Impl)]
-    #[token("import", |_| Keywords::Import)]
-    #[token("in", |_| Keywords::In)]
-    #[token("let", |_| Keywords::Let)]
-    #[token("loop", |_| Keywords::Loop)]
-    #[token("match", |_| Keywords::Match)]
-    #[token("self", |_| Keywords::SelfLower)]
-    #[token("Self", |_| Keywords::SelfUpper)]
-    #[token("trait", |_| Keywords::Trait)]
-    #[token("true", |_| Keywords::True)]
-    #[token("type", |_| Keywords::Type)]
-    #[token("where", |_| Keywords::Where)]
-    #[token("while", |_| Keywords::While)]
-    Keyword(Keywords),
+    // #[token("as", |_| Keywords::As)]
+    // #[token("async", |_| Keywords::Async)]
+    // #[token("await", |_| Keywords::Await)]
+    // #[token("break", |_| Keywords::Break)]
+    // #[token("const", |_| Keywords::Const)]
+    // #[token("continue", |_| Keywords::Continue)]
+    // #[token("else", |_| Keywords::Else)]
+    // #[token("enum", |_| Keywords::Enum)]
+    // #[token("export", |_| Keywords::Export)]
+    // #[token("false", |_| Keywords::False)]
+    // #[token("fn", |_| Keywords::Fn)]
+    // #[token("for", |_| Keywords::For)]
+    // #[token("if", |_| Keywords::If)]
+    // #[token("impl", |_| Keywords::Impl)]
+    // #[token("import", |_| Keywords::Import)]
+    // #[token("in", |_| Keywords::In)]
+    // #[token("let", |_| Keywords::Let)]
+    // #[token("loop", |_| Keywords::Loop)]
+    // #[token("match", |_| Keywords::Match)]
+    // #[token("self", |_| Keywords::SelfLower)]
+    // #[token("Self", |_| Keywords::SelfUpper)]
+    // #[token("trait", |_| Keywords::Trait)]
+    // #[token("true", |_| Keywords::True)]
+    // #[token("type", |_| Keywords::Type)]
+    // #[token("where", |_| Keywords::Where)]
+    // #[token("while", |_| Keywords::While)]
+    // Keyword(Keywords),
 
     // One-char tokens:
     /// ";"
@@ -169,6 +169,8 @@ pub enum TokenKind {
     /// "-"
     #[token("-")]
     Minus,
+    #[token("_")]
+    Underscore,
     /// "&"
     #[token("&")]
     And,
@@ -191,24 +193,19 @@ pub enum TokenKind {
     #[token("%")]
     Percent,
     #[error]
-    Error,
-    /// End of input.
-    Eof,
+    Unknown,
 }
 
 impl TokenKind {
     pub fn is_trivia(self) -> bool {
-        matches!(
-            self,
-            Self::Whitespace | Self::LineComment(_) | Self::BlockComment(_)
-        )
+        matches!(self, Self::Whitespace | Self::LineComment(_) | Self::BlockComment(_))
     }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct BlockCommentToken {
-    doc_style: Option<DocStyle>,
-    terminated: bool,
+    pub doc_style: Option<DocStyle>,
+    pub terminated: bool,
 }
 
 impl BlockCommentToken {
@@ -221,10 +218,7 @@ impl BlockCommentToken {
                 if let Some(next) = lex.read::<u8>() {
                     lex.bump(1);
                     if next == b'/' {
-                        return BlockCommentToken {
-                            doc_style: None,
-                            terminated: true,
-                        };
+                        return BlockCommentToken { doc_style: None, terminated: true };
                     } else if next != b'*' {
                         Some(DocStyle::Outer)
                     } else {
@@ -282,10 +276,7 @@ impl BlockCommentToken {
             }
         }
 
-        BlockCommentToken {
-            doc_style,
-            terminated,
-        }
+        BlockCommentToken { doc_style, terminated }
     }
 }
 
@@ -315,18 +306,10 @@ pub enum LiteralKind {
     ByteStr { terminated: bool },
     /// "r"abc"", "r#"abc"#", "r####"ab"###"c"####", "r#"a". `None` indicates
     /// an invalid literal.
-    RawStr {
-        n_start_hashes: u32,
-        n_end_hashes: u32,
-        bad_char: Option<char>,
-    },
+    RawStr { n_start_hashes: u32, n_end_hashes: u32, bad_char: Option<char> },
     /// "br"abc"", "br#"abc"#", "br####"ab"###"c"####", "br#"a". `None`
     /// indicates an invalid literal.
-    RawByteStr {
-        n_start_hashes: u32,
-        n_end_hashes: u32,
-        bad_char: Option<char>,
-    },
+    RawByteStr { n_start_hashes: u32, n_end_hashes: u32, bad_char: Option<char> },
 }
 
 impl LiteralKind {
@@ -356,21 +339,13 @@ impl LiteralKind {
     fn lex_raw_str(lex: &mut Lexer<TokenKind>) -> Self {
         let (n_start_hashes, n_end_hashes, bad_char) = raw_string(lex);
 
-        LiteralKind::RawStr {
-            n_start_hashes,
-            n_end_hashes,
-            bad_char,
-        }
+        LiteralKind::RawStr { n_start_hashes, n_end_hashes, bad_char }
     }
 
     fn lex_raw_byte_str(lex: &mut Lexer<TokenKind>) -> Self {
         let (n_start_hashes, n_end_hashes, bad_char) = raw_string(lex);
 
-        LiteralKind::RawByteStr {
-            n_start_hashes,
-            n_end_hashes,
-            bad_char,
-        }
+        LiteralKind::RawByteStr { n_start_hashes, n_end_hashes, bad_char }
     }
 }
 
@@ -428,6 +403,9 @@ pub enum Keywords {
     Where,
     While,
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Symbols {}
 
 /// Eats double-quoted string and returns true
 /// if string is terminated.

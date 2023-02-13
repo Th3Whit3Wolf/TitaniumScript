@@ -27,13 +27,11 @@ use expect_test::Expect;
 pub fn check(input: &str, expected: TokenKind) {
     let mut lexer = Lexer::new(input);
     let token = lexer.next().unwrap();
-    assert_eq!(token.kind, expected);
-    assert_eq!(token.text, input);
+    similar_asserts::assert_eq!(token.kind, expected);
+    similar_asserts::assert_eq!(token.text, input);
 }
 
 pub fn check_lexing(src: &str, expect: Expect) {
-    let actual: String = Lexer::new(src)
-        .map(|token| format!("{token:?}\n"))
-        .collect();
+    let actual: String = Lexer::new(src).map(|token| format!("{token:?}\n")).collect();
     expect.assert_eq(&actual)
 }

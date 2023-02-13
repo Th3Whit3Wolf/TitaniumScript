@@ -8,10 +8,7 @@ mod binary {
     fn lower_with_decimal() {
         check(
             "0b1010.01",
-            TokenKind::Literal(LiteralKind::Float {
-                base: Base::Binary,
-                empty_exponent: true,
-            }),
+            TokenKind::Literal(LiteralKind::Float { base: Base::Binary, empty_exponent: false }),
         )
     }
 
@@ -19,10 +16,7 @@ mod binary {
     fn upper_with_decimal() {
         check(
             "0B1010.01",
-            TokenKind::Literal(LiteralKind::Float {
-                base: Base::Binary,
-                empty_exponent: true,
-            }),
+            TokenKind::Literal(LiteralKind::Float { base: Base::Binary, empty_exponent: false }),
         )
     }
 
@@ -84,21 +78,7 @@ mod decimal {
     fn with_decimal() {
         check(
             "200.002",
-            TokenKind::Literal(LiteralKind::Float {
-                base: Base::Decimal,
-                empty_exponent: true,
-            }),
-        )
-    }
-
-    #[test]
-    fn with_positive_prefix() {
-        check(
-            "+200.002",
-            TokenKind::Literal(LiteralKind::Float {
-                base: Base::Decimal,
-                empty_exponent: true,
-            }),
+            TokenKind::Literal(LiteralKind::Float { base: Base::Decimal, empty_exponent: false }),
         )
     }
 
@@ -106,21 +86,7 @@ mod decimal {
     fn with_negative_prefix() {
         check(
             "-200.002",
-            TokenKind::Literal(LiteralKind::Float {
-                base: Base::Decimal,
-                empty_exponent: true,
-            }),
-        )
-    }
-
-    #[test]
-    fn without_integral() {
-        check(
-            ".002",
-            TokenKind::Literal(LiteralKind::Float {
-                base: Base::Decimal,
-                empty_exponent: true,
-            }),
+            TokenKind::Literal(LiteralKind::Float { base: Base::Decimal, empty_exponent: false }),
         )
     }
 
@@ -151,31 +117,9 @@ mod decimal {
         }
 
         #[test]
-        fn with_positive_prefix() {
-            check(
-                "+200.002e2",
-                TokenKind::Literal(LiteralKind::Float {
-                    base: Base::Decimal,
-                    empty_exponent: false,
-                }),
-            )
-        }
-
-        #[test]
         fn with_negative_prefix() {
             check(
                 "-200.002e2",
-                TokenKind::Literal(LiteralKind::Float {
-                    base: Base::Decimal,
-                    empty_exponent: false,
-                }),
-            )
-        }
-
-        #[test]
-        fn without_integral() {
-            check(
-                ".002e2",
                 TokenKind::Literal(LiteralKind::Float {
                     base: Base::Decimal,
                     empty_exponent: false,
@@ -193,10 +137,7 @@ mod octal {
     fn lower_with_decimal() {
         check(
             "0o123.01",
-            TokenKind::Literal(LiteralKind::Float {
-                base: Base::Octal,
-                empty_exponent: true,
-            }),
+            TokenKind::Literal(LiteralKind::Float { base: Base::Octal, empty_exponent: false }),
         )
     }
 
@@ -204,10 +145,7 @@ mod octal {
     fn upper_with_decimal() {
         check(
             "0O123.01",
-            TokenKind::Literal(LiteralKind::Float {
-                base: Base::Octal,
-                empty_exponent: true,
-            }),
+            TokenKind::Literal(LiteralKind::Float { base: Base::Octal, empty_exponent: false }),
         )
     }
 
@@ -219,10 +157,7 @@ mod octal {
         fn lower_with_decimal() {
             check(
                 "0o123.01e2",
-                TokenKind::Literal(LiteralKind::Float {
-                    base: Base::Octal,
-                    empty_exponent: false,
-                }),
+                TokenKind::Literal(LiteralKind::Float { base: Base::Octal, empty_exponent: false }),
             )
         }
 
@@ -230,10 +165,7 @@ mod octal {
         fn upper_with_decimal() {
             check(
                 "0O123.01e2",
-                TokenKind::Literal(LiteralKind::Float {
-                    base: Base::Octal,
-                    empty_exponent: false,
-                }),
+                TokenKind::Literal(LiteralKind::Float { base: Base::Octal, empty_exponent: false }),
             )
         }
 
@@ -241,10 +173,7 @@ mod octal {
         fn lower_without_decimal() {
             check(
                 "0o123e2",
-                TokenKind::Literal(LiteralKind::Float {
-                    base: Base::Octal,
-                    empty_exponent: false,
-                }),
+                TokenKind::Literal(LiteralKind::Float { base: Base::Octal, empty_exponent: false }),
             )
         }
 
@@ -252,10 +181,7 @@ mod octal {
         fn upper_without_decimal() {
             check(
                 "0O123e2",
-                TokenKind::Literal(LiteralKind::Float {
-                    base: Base::Octal,
-                    empty_exponent: false,
-                }),
+                TokenKind::Literal(LiteralKind::Float { base: Base::Octal, empty_exponent: false }),
             )
         }
     }
@@ -271,7 +197,7 @@ mod hexadecimal {
             "0x123AE.01",
             TokenKind::Literal(LiteralKind::Float {
                 base: Base::Hexadecimal,
-                empty_exponent: true,
+                empty_exponent: false,
             }),
         )
     }
@@ -282,7 +208,7 @@ mod hexadecimal {
             "0X123AE.01",
             TokenKind::Literal(LiteralKind::Float {
                 base: Base::Hexadecimal,
-                empty_exponent: true,
+                empty_exponent: false,
             }),
         )
     }
