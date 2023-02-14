@@ -1,8 +1,8 @@
 [workspace]
-members = ["crates/*"]
+members = ["crates/*", "tasks"]
 
 [workspace.package]
-rust-version = "1.66"
+rust-version = "1.67.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 authors = ["David Karrick <the.white.wolf.is.1337@gmail.com>"]
@@ -17,6 +17,7 @@ debug = 0
 # These speed up local tests.
 rowan.opt-level = 3
 rustc-hash.opt-level = 3
+similar.opt-level = 3
 smol_str.opt-level = 3
 text-size.opt-level = 3
 
@@ -28,3 +29,12 @@ debug = 0
 
 [workspace.dependencies]
 lexer = { path = "./crates/lexer", version = "0.1.0" }
+limit = { path = "./crates/limit", version = "0.0.0" }
+parser = { path = "./crates/parser", version = "0.0.0" }
+profile = { path = "./crates/profile", version = "0.0.0" }
+sourcegen = { path = "./crates/sourcegen", version = "0.0.0" }
+
+stdx = { path = "./crates/stdx", version = "0.0.0" }
+syntax = { path = "./crates/syntax", version = "0.0.0" }
+test-utils = { path = "./crates/test-utils", version = "0.0.0" }
+text-edit = { path = "./crates/text-edit", version = "0.0.0" }
