@@ -1,0 +1,13 @@
+[package]
+name = "crates_tests"
+version = "0.0.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+similar-asserts = "1.4.2"
+
+lexer.workspace = true
+parser.workspace = true
+test-utils.workspace = true
