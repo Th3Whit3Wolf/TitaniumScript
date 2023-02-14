@@ -1,7 +1,5 @@
-#[cfg(test)]
-mod tests;
 mod token_kind;
-pub use token_kind::TokenKind;
+pub use token_kind::{Base, BlockCommentToken, Keywords, LiteralKind, TokenKind};
 
 use logos::Logos;
 use std::convert::TryFrom;
@@ -14,9 +12,7 @@ pub struct Lexer<'a> {
 
 impl<'a> Lexer<'a> {
     pub fn new(input: &'a str) -> Self {
-        Self {
-            inner: TokenKind::lexer(input),
-        }
+        Self { inner: TokenKind::lexer(input) }
     }
 }
 
@@ -39,7 +35,7 @@ impl<'a> Iterator for Lexer<'a> {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Token<'a> {
     pub kind: TokenKind,
     pub text: &'a str,
