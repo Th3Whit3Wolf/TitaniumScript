@@ -24,19 +24,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup Rust toolchain
-        run: |
-          rustup update --no-self-update stable
-          rustup component add rustfmt rust-src clippy
-          cargo install cargo-nextest --locked
+      - name: Cargo Cache
+        uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
+        with:
+          command: cache
+      
+      - name: Install Rustup
+        uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
+        with:
+          command: install-rustup
+          toolchain: stable
+          target: ${{ matrix.target }}
+          profile: default
+          default: true
+      - name: Install nextest
+        uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
 
-      - name: Cache Dependencies
-        uses: Swatinem/rust-cache@76686c56f2b581d1bb5bda44b51f7e24bd9b8b8e
+        with:
+          command: cargo install
+          args: cargo-nextest
 
       - name: Rustfmt
-        uses: actions-rs/cargo@v1
+        uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
         with:
-          command: fmt
+          command: cargo fmt
           args: --all -- --check
 
       - name: Bump opt-level
