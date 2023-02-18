@@ -1,11 +1,11 @@
-use crate::{date_iso, flags, project_root};
+use crate::{flags, project_root};
 mod extract;
 mod generate;
 mod lower;
 mod utils;
 mod ast;
 use crate::grammar::{
-    ast::{AstEnumSrc, AstNodeSrc, AstSrc, Cardinality, KindsSrc, KINDS_SRC},
+    ast::{AstEnumSrc, AstNodeSrc, AstSrc, Cardinality, KINDS_SRC},
     extract::{extract_enum_traits, extract_enums, extract_struct_traits},
     generate::{generate_nodes, generate_syntax_kinds, generate_tokens},
     lower::{lower_enum, lower_rule},
@@ -13,7 +13,7 @@ use crate::grammar::{
 };
 use quote::{format_ident, quote};
 use ungrammar::Grammar;
-use xshell::{cmd, Shell};
+use xshell::Shell;
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Field {
@@ -131,7 +131,7 @@ impl AstNodeSrc {
 }
 
 impl flags::Grammar {
-    pub(crate) fn run(self, sh: &Shell) -> anyhow::Result<()> {
+    pub(crate) fn run(self, _sh: &Shell) -> anyhow::Result<()> {
         let syntax_kinds = generate_syntax_kinds(KINDS_SRC);
         let syntax_kinds_file = project_root().join("crates/parser/src/syntax_kind/generated.rs");
         ensure_file_contents(syntax_kinds_file.as_path(), &syntax_kinds);

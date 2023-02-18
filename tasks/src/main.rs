@@ -11,7 +11,7 @@
 #![warn(rust_2018_idioms, unused_lifetimes, semicolon_in_expressions_from_macros)]
 
 mod flags;
-
+mod badges;
 mod grammar;
 
 use anyhow::bail;
@@ -28,6 +28,8 @@ fn main() -> anyhow::Result<()> {
     sh.change_dir(project_root());
 
     match flags.subcommand {
+        flags::XtaskCmd::Badges(cmd) => cmd.run(sh),
+
         flags::XtaskCmd::Grammar(cmd) => cmd.run(sh),
         flags::XtaskCmd::FuzzTests(_) => run_fuzzer(sh),
     }
