@@ -65,6 +65,7 @@ jobs:
           args: --workspace -- -D warnings -D clippy::unwrap_used -A clippy::needless_collect
 
       - name: Make badges
+        if: matrix.os == 'ubuntu-latest'
         run: |
           cargo run --package task --bin task badges
           git push origin `git subtree split --prefix badge_data main`:badges --force
