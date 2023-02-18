@@ -82,7 +82,7 @@ jobs:
           cargo run --package task --bin task badges
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add badge_data
+          git add -A ./badge_data
           git commit -m "Chore(badges): Update badges"
           git push origin `git subtree split --prefix badge_data main`:badges --force
 
