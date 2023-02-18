@@ -19,10 +19,10 @@ use super::*;
 // struct S;
 pub(super) fn mod_contents(p: &mut Parser<'_>, stop_on_r_curly: bool) {
     attributes::inner_attrs(p);
-    while !{
-        let ref this = p;
+    while !({
+        let this = &(&p);
         this.nth_at(0, EOF)
-    } && !(p.at(T!['}']) && stop_on_r_curly)
+    } || p.at(T!['}']) && stop_on_r_curly)
     {
         item_or_macro(p, stop_on_r_curly);
     }

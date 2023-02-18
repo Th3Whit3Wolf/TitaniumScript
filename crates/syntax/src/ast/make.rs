@@ -346,7 +346,7 @@ pub fn hacky_block_expr(
                     format_to!(buf, "    {t}\n")
                 } else if kind == SyntaxKind::WHITESPACE {
                     let content = t.text().trim_matches(|c| c != '\n');
-                    if content.len() >= 1 {
+                    if !content.is_empty() {
                         format_to!(buf, "{}", &content[1..])
                     }
                 }
@@ -816,6 +816,7 @@ pub fn variant(name: ast::Name, field_list: Option<ast::FieldList>) -> ast::Vari
     ast_from_text(&format!("enum f {{ {name}{field_list} }}"))
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn fn_(
     visibility: Option<ast::Visibility>,
     fn_name: ast::Name,

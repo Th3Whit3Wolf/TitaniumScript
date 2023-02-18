@@ -14,6 +14,8 @@ mod grammar;
 mod inline;
 #[cfg(test)]
 mod lex;
+
+#[allow(clippy::module_inception)]
 #[cfg(test)]
 mod parser;
 

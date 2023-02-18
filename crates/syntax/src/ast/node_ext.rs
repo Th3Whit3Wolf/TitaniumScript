@@ -763,6 +763,7 @@ impl ast::Meta {
 
 impl ast::GenericParamList {
     pub fn type_or_const_params(&self) -> impl Iterator<Item = ast::TypeOrConstParam> {
+        #[allow(clippy::unnecessary_filter_map)]
         self.generic_params().filter_map(|param| match param {
             ast::GenericParam::TypeParam(it) => Some(ast::TypeOrConstParam::Type(it)),
             ast::GenericParam::ConstParam(it) => Some(ast::TypeOrConstParam::Const(it)),
