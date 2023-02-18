@@ -45,7 +45,7 @@ jobs:
           args: --all -- --check
 
       - name: Clippy
-        uses: FrancisRussell/ferrous-actions@v0.1.0-beta.1
+        uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
         with:
           command: cargo clippy
           args: --workspace -- -D warnings
@@ -82,9 +82,7 @@ jobs:
           cargo run --package task --bin task badges
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add -A ./badge_data
-          git commit -m "Chore(badges): Update badges"
-          git push origin `git subtree split --prefix badge_data main`:badges --force
+          if [ $(git diff --name-only --cached | wc -l) = 0 ]; then git add -A badge_data/*; git commit -m "Chore(badges): Update badges"; git push origin `git subtree split --prefix badge_data main`:badges --force; fi;
 
   tests:
     name: Test
