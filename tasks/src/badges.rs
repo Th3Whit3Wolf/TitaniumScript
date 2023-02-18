@@ -1,6 +1,5 @@
 use crate::{flags, project_root};
 use std::{
-    fmt,
     fs::{self, File},
     io::Write,
     process::Command,
@@ -15,22 +14,20 @@ struct TestSummary {
     passed: u64,
     failed: u64,
     skipped: u64,
-    runs: u64,
     total: u64,
 }
 
 impl TestSummary {
     // Example output from `cargo nextest run 2>&1 | grep "Summary"`
-    // `     Summary [   0.058s] 79/540 tests run: 67 passed, 12 failed, 0 skipped`
+    // `     Summary [   0.329s] 540 tests run: 138 passed, 402 failed, 0 skipped`
     fn try_get() -> Option<TestSummary> {
         let mut passed = None;
         let mut failed = None;
         let mut skipped = None;
-        let mut runs = None;
         let mut total = None;
 
         let output = Command::new("cargo")
-            .args(["nextest", "run"])
+            .args(["nextest", "run", "--no-fail-fast"])
             .output()
             .expect("failed to execute process");
         let output_err = std::str::from_utf8(&output.stderr).expect("Unable to get stderr");
@@ -38,6 +35,12 @@ impl TestSummary {
 
         let mut output_split: Option<String> = None;
         if output_err.contains("Summary") {
+            println!("Yes");
+            for stuff in output_err.split('\n') {
+                if stuff.trim().starts_with("Summary") {
+                    println!("{}", stuff.trim())
+                }
+            }
             output_split = Some(
                 output_err
                     .split('\n')
@@ -55,16 +58,14 @@ impl TestSummary {
         }
         if let Some(out) = output_split {
             let datas = out.trim().split(' ').collect::<Vec<&str>>();
+            println!("{datas:?}");
 
             for idx in 0..datas.len() {
                 match datas[idx] {
                     "tests" => {
-                        let total_run_data: Vec<u64> = datas[idx - 1]
-                            .split('/')
-                            .filter_map(|s| s.parse::<u64>().ok())
-                            .collect();
-                        if total_run_data.len() == 2 {
-                            (runs, total) = (Some(total_run_data[0]), Some(total_run_data[1]));
+                        let total_num = datas[idx - 1].parse::<u64>();
+                        if let Ok(num) = total_num {
+                            total = Some(num)
                         }
                     }
                     "passed," => {
@@ -89,10 +90,10 @@ impl TestSummary {
                 }
             }
         }
-        if let (Some(passed), Some(failed), Some(skipped), Some(total), Some(runs)) =
-            (passed, failed, skipped, total, runs)
+        if let (Some(passed), Some(failed), Some(skipped), Some(total)) =
+            (passed, failed, skipped, total)
         {
-            Some(TestSummary { passed, failed, skipped, total, runs })
+            Some(TestSummary { passed, failed, skipped, total })
         } else {
             None
         }
@@ -104,8 +105,8 @@ impl TestSummary {
     fn fmt_sucessful_test_badge(&self) -> String {
         format!(
             "{}% ({}/{})",
-            (self.runs as f64 / self.total as f64 * 100.0).round(),
-            self.runs,
+            (self.passed as f64 / self.total as f64 * 100.0).round(),
+            self.passed,
             self.total
         )
     }
@@ -129,16 +130,6 @@ fn mk_badges(test_badge_data: String, successful_test_badge_data: String) {
             "Unable to write to badge_data/successful_test_badge.svg directory in project root",
         );
     };
-}
-
-impl fmt::Display for TestSummary {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "({}/{} ✓ {} ✗ {} ➟ {})",
-            self.runs, self.total, self.passed, self.failed, self.skipped
-        )
-    }
 }
 
 fn color_from_percent(perc: f64) -> String {
@@ -178,14 +169,6 @@ impl flags::Badges {
                 .build()
                 .expect("Unable to create successful tests badge")
                 .svg();
-
-            println!(
-                "Test: {}\nSuccessful Tests: {}\n\n{}\n\n{}",
-                ts.fmt_test_badge(),
-                ts.fmt_sucessful_test_badge(),
-                tests_shield,
-                successful_tests_shield
-            );
 
             mk_badges(tests_shield, successful_tests_shield);
         } else {
