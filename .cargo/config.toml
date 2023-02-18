@@ -4,8 +4,23 @@ tq = "test -- -q"
 qt = "tq"
 lint = "clippy --all-targets -- -Aclippy::collapsible_if -Aclippy::needless_pass_by_value -Aclippy::nonminimal_bool -Aclippy::redundant_pattern_matching --cap-lints warn"
 
+
+[build]
+[target.x86_64-unknown-linux-gnu]
+rustflags = ['-Clink-arg=-fuse-ld=lld', '-Zshare-generics=y']
+
 [target.x86_64-pc-windows-msvc]
-linker = "rust-lld"
+rustflags = ['-Zshare-generics=y']
+
+[target.x86_64-apple-darwin]
+rustflags = ['-C', '-Zshare-generics=y', '-Csplit-debuginfo=unpacked']
+
+[profile.dev]
+opt-level = 0
+debug = 2
+incremental = true
+codegen-units = 512
+
 
 [env]
 CARGO_WORKSPACE_DIR = { value = "", relative = true }
