@@ -33,6 +33,11 @@ impl<T> NonEmptyVec<T> {
     }
 
     #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.rest.len() == 0
+    }
+
+    #[inline]
     pub fn into_last(mut self) -> T {
         self.rest.pop().unwrap_or(self.first)
     }

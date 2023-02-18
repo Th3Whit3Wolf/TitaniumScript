@@ -48,7 +48,7 @@ jobs:
         uses: FrancisRussell/ferrous-actions@v0.1.0-beta.1
         with:
           command: cargo clippy
-          args: --workspace -- -D warnings -D clippy::unwrap_used -A clippy::needless_collect
+          args: --workspace -- -D warnings
 
   badge:
     name: Generate Testing Badges
