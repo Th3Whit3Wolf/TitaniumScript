@@ -20,14 +20,14 @@ mod raw_byte_str;
 mod raw_str;
 #[cfg(test)]
 mod str;
-pub fn check(input: &str, expected: TokenKind) {
+pub(crate) fn check(input: &str, expected: TokenKind) {
     let mut lexer = Lexer::new(input);
     let token = lexer.next().unwrap();
     assert_eq!(token.kind, expected);
     assert_eq!(token.text, input);
 }
 
-pub fn check_lexing(src: &str, expect: &str) {
+pub(crate) fn check_lexing(src: &str, expect: &str) {
     let actual: String = Lexer::new(src).map(|token| format!("{token:?}\n")).collect();
     expect_eq(expect, &actual)
 }

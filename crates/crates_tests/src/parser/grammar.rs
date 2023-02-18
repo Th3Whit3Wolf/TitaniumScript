@@ -8,7 +8,7 @@ use std::{
 
 use std::{collections::HashMap, iter};
 
-pub fn project_root() -> PathBuf {
+pub(crate) fn project_root() -> PathBuf {
     let dir = env!("CARGO_MANIFEST_DIR");
     let res = PathBuf::from(dir).parent().unwrap().parent().unwrap().to_owned();
     assert!(res.join("rustfmt.toml").exists());
@@ -21,7 +21,7 @@ fn normalize_newlines(s: &str) -> String {
 
 /// Checks that the `file` has the specified `contents`. If that is not the
 /// case, updates the file and then fails the test.
-pub fn ensure_file_contents(file: &Path, contents: &str) {
+pub(crate) fn ensure_file_contents(file: &Path, contents: &str) {
     if let Ok(old_contents) = fs::read_to_string(file) {
         if normalize_newlines(&old_contents) == normalize_newlines(contents) {
             // File is already up to date.
@@ -58,21 +58,24 @@ struct Tests {
 }
 
 #[derive(Clone)]
-pub struct CommentBlock {
-    pub id: String,
-    pub line: usize,
-    pub contents: Vec<String>,
+struct CommentBlock {
+    // id: String,
+    line: usize,
+    contents: Vec<String>,
     is_doc: bool,
 }
 
 impl CommentBlock {
-    pub fn extract_untagged(text: &str) -> Vec<CommentBlock> {
+    fn extract_untagged(text: &str) -> Vec<CommentBlock> {
         let mut res = Vec::new();
 
         let lines = text.lines().map(str::trim_start);
 
-        let dummy_block =
-            CommentBlock { id: String::new(), line: 0, contents: Vec::new(), is_doc: false };
+        let dummy_block = CommentBlock {
+            /* id: String::new(), */ line: 0,
+            contents: Vec::new(),
+            is_doc: false,
+        };
         let mut block = dummy_block.clone();
         for (line_num, line) in lines.enumerate() {
             match line.strip_prefix("//") {
@@ -125,7 +128,7 @@ fn collect_tests(s: &str) -> Vec<Test> {
     res
 }
 
-pub fn list_files(dir: &Path) -> Vec<PathBuf> {
+fn list_files(dir: &Path) -> Vec<PathBuf> {
     let mut res = Vec::new();
     let mut work = vec![dir.to_path_buf()];
     while let Some(dir) = work.pop() {
@@ -147,7 +150,7 @@ pub fn list_files(dir: &Path) -> Vec<PathBuf> {
     res
 }
 
-pub fn list_rust_files(dir: &Path) -> Vec<PathBuf> {
+fn list_rust_files(dir: &Path) -> Vec<PathBuf> {
     let mut res = list_files(dir);
     res.retain(|it| {
         it.file_name().unwrap_or_default().to_str().unwrap_or_default().ends_with(".rs")

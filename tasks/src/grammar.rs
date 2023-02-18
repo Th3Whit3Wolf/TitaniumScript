@@ -16,7 +16,7 @@ use ungrammar::Grammar;
 use xshell::Shell;
 
 #[derive(Debug, Eq, PartialEq)]
-pub enum Field {
+pub(crate) enum Field {
     Token(String),
     Node { name: String, ty: String, cardinality: Cardinality },
 }

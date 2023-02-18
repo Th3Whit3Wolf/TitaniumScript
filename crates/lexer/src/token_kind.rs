@@ -214,8 +214,6 @@ impl BlockCommentToken {
     fn from_lex(lex: &mut Lexer<TokenKind>) -> Self {
         let slice = lex.slice().as_bytes();
 
-        let s = r"hello";
-
         let doc_style: Option<DocStyle> = match slice {
             b"/*!" => Some(DocStyle::Inner),
             b"/**" => {

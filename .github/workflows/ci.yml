@@ -14,15 +14,13 @@ jobs:
     name: Rust
     runs-on: ${{ matrix.os }}
     strategy:
-        fail-fast: true
-        matrix:
-          os: [ubuntu-latest, windows-latest, macos-latest]
-          rust:
-            - stable
-
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        rust:
+          - stable
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v2
 
@@ -46,7 +44,7 @@ jobs:
         run: sed -i '/\[profile.dev]/a opt-level=1' Cargo.toml
 
       - name: Compile (tests)
-        run: cargo nextest run  --no-run 
+        run: cargo nextest run  --no-run
 
       # It's faster to `test` before `build` ¯\_(ツ)_/¯
       - name: Compile (?)
@@ -67,4 +65,3 @@ jobs:
         run: |
           cargo run --package task --bin task badges
           git push origin `git subtree split --prefix badge_data main`:badges --force
-

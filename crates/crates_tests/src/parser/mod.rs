@@ -18,14 +18,14 @@ mod lex;
 mod parser;
 
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
-pub struct TestCase {
-    pub tis: PathBuf,
-    pub tast: PathBuf,
-    pub text: String,
+struct TestCase {
+    tis: PathBuf,
+    tast: PathBuf,
+    text: String,
 }
 
 impl TestCase {
-    pub fn single(path: &'static str) -> TestCase {
+    fn single(path: &'static str) -> TestCase {
         let crate_root_dir = Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap().join("parser");
         let test_data_dir = crate_root_dir.join("test_data");
         let mut tis = test_data_dir.join(path);
@@ -60,7 +60,7 @@ fn lex(text: &str) -> String {
     res
 }
 
-pub fn check_parser_lex(path: &'static str) {
+pub(crate) fn check_parser_lex(path: &'static str) {
     let file = TestCase::single(path);
     let actual = lex(&file.text);
     expect_file(file.tast, &actual);
@@ -119,7 +119,7 @@ fn parse(entry: TopEntryPoint, text: &str) -> (String, bool) {
     (buf, has_errors)
 }
 
-pub fn check_parser_parser(path: &'static str) {
+pub(crate) fn check_parser_parser(path: &'static str) {
     let file = TestCase::single(path);
     let (actual, errors) = parse(TopEntryPoint::SourceFile, &file.text);
     assert!(

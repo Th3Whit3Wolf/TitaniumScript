@@ -8,7 +8,7 @@ use crate::grammar::{
     utils::{add_preamble, reformat, to_pascal_case, to_upper_snake_case, write_doc_comment},
 };
 
-pub fn generate_syntax_kinds(grammar: KindsSrc<'_>) -> String {
+pub(crate) fn generate_syntax_kinds(grammar: KindsSrc<'_>) -> String {
     let (single_byte_tokens_values, single_byte_tokens): (Vec<_>, Vec<_>) = grammar
         .punct
         .iter()
@@ -132,7 +132,7 @@ pub fn generate_syntax_kinds(grammar: KindsSrc<'_>) -> String {
     add_preamble("generator", reformat(ast.to_string()))
 }
 
-pub fn generate_tokens(grammar: &AstSrc) -> String {
+pub(crate) fn generate_tokens(grammar: &AstSrc) -> String {
     let tokens = grammar.tokens.iter().map(|token| {
         let name = format_ident!("{}", token);
         let kind = format_ident!("{}", to_upper_snake_case(token));
@@ -169,7 +169,7 @@ pub fn generate_tokens(grammar: &AstSrc) -> String {
     .replace("#[derive", "\n#[derive")
 }
 
-pub fn generate_nodes(kinds: KindsSrc<'_>, grammar: &AstSrc) -> String {
+pub(crate) fn generate_nodes(kinds: KindsSrc<'_>, grammar: &AstSrc) -> String {
     let (node_defs, node_boilerplate_impls): (Vec<_>, Vec<_>) = grammar
         .nodes
         .iter()

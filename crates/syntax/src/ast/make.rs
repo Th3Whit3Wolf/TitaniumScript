@@ -10,7 +10,7 @@
 //! `parse(format!())` we use internally is an implementation detail -- long
 //! term, it will be replaced with direct tree manipulation.
 use itertools::Itertools;
-use stdx::{format_to, never};
+use stdx::format_to;
 
 use crate::{ast, AstNode, SourceFile, SyntaxKind, SyntaxToken};
 

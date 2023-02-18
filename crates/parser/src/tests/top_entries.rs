@@ -58,16 +58,6 @@ fn macro_stmt() {
             MACRO_STMTS
         "#]],
     );
-    // check(
-    //     TopEntryPoint::MacroStmts,
-    //     "#!/usr/bin/rust",
-    //     expect![[r##"
-    //         MACRO_STMTS
-    //           ERROR
-    //             SHEBANG "#!/usr/bin/rust"
-    //         error 0: expected expression
-    //     "##]],
-    // );
     check(
         TopEntryPoint::MacroStmts,
         "let x = 1 2 struct S;",
@@ -108,16 +98,6 @@ fn macro_items() {
             MACRO_ITEMS
         "#]],
     );
-    // check(
-    //     TopEntryPoint::MacroItems,
-    //     "#!/usr/bin/rust",
-    //     expect![[r##"
-    //         MACRO_ITEMS
-    //           ERROR
-    //             SHEBANG "#!/usr/bin/rust"
-    //         error 0: expected an item
-    //     "##]],
-    // );
     check(
         TopEntryPoint::MacroItems,
         "struct S; foo!{}",

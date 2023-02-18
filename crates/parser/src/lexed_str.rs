@@ -15,7 +15,7 @@ use crate::{
     T,
 };
 
-use lexer::{BlockCommentToken, Lexer, LiteralKind, Token};
+use lexer::{BlockCommentToken, Lexer};
 pub struct LexedStr<'a> {
     text: &'a str,
     kind: Vec<SyntaxKind>,

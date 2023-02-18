@@ -62,11 +62,11 @@ fn run_fuzzer(sh: &Shell) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn date_iso(sh: &Shell) -> anyhow::Result<String> {
-    let res = cmd!(sh, "date -u +%Y-%m-%d").read()?;
-    Ok(res)
-}
+// fn date_iso(sh: &Shell) -> anyhow::Result<String> {
+//     let res = cmd!(sh, "date -u +%Y-%m-%d").read()?;
+//     Ok(res)
+// }
 
-fn is_release_tag(tag: &str) -> bool {
-    tag.len() == "2023-02-14".len() && tag.starts_with(|c: char| c.is_ascii_digit())
-}
+// fn is_release_tag(tag: &str) -> bool {
+//     tag.len() == "2023-02-14".len() && tag.starts_with(|c: char| c.is_ascii_digit())
+// }

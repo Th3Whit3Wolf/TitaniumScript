@@ -6,7 +6,7 @@ use crate::grammar::{
     Field,
 };
 
-pub fn lower_enum(grammar: &Grammar, rule: &Rule) -> Option<Vec<String>> {
+pub(crate) fn lower_enum(grammar: &Grammar, rule: &Rule) -> Option<Vec<String>> {
     let alternatives = match rule {
         Rule::Alt(it) => it,
         _ => return None,
@@ -22,7 +22,12 @@ pub fn lower_enum(grammar: &Grammar, rule: &Rule) -> Option<Vec<String>> {
     Some(variants)
 }
 
-pub fn lower_rule(acc: &mut Vec<Field>, grammar: &Grammar, label: Option<&String>, rule: &Rule) {
+pub(crate) fn lower_rule(
+    acc: &mut Vec<Field>,
+    grammar: &Grammar,
+    label: Option<&String>,
+    rule: &Rule,
+) {
     if lower_comma_list(acc, grammar, label, rule) {
         return;
     }
@@ -89,7 +94,7 @@ pub fn lower_rule(acc: &mut Vec<Field>, grammar: &Grammar, label: Option<&String
 }
 
 // (T (',' T)* ','?)
-pub fn lower_comma_list(
+pub(crate) fn lower_comma_list(
     acc: &mut Vec<Field>,
     grammar: &Grammar,
     label: Option<&String>,

@@ -5,7 +5,7 @@ use crate::grammar::{
 };
 use std::collections::BTreeSet;
 
-pub fn extract_enums(ast: &mut AstSrc) {
+pub(crate) fn extract_enums(ast: &mut AstSrc) {
     for node in &mut ast.nodes {
         for enm in &ast.enums {
             let mut to_remove = Vec::new();
@@ -25,7 +25,7 @@ pub fn extract_enums(ast: &mut AstSrc) {
     }
 }
 
-pub fn extract_struct_traits(ast: &mut AstSrc) {
+pub(crate) fn extract_struct_traits(ast: &mut AstSrc) {
     let traits: &[(&str, &[&str])] = &[
         ("HasAttrs", &["attrs"]),
         ("HasName", &["name"]),
@@ -73,7 +73,7 @@ pub fn extract_struct_traits(ast: &mut AstSrc) {
     }
 }
 
-pub fn extract_struct_trait(node: &mut AstNodeSrc, trait_name: &str, methods: &[&str]) {
+pub(crate) fn extract_struct_trait(node: &mut AstNodeSrc, trait_name: &str, methods: &[&str]) {
     let mut to_remove = Vec::new();
     for (i, field) in node.fields.iter().enumerate() {
         let method_name = field.method_name().to_string();
@@ -87,7 +87,7 @@ pub fn extract_struct_trait(node: &mut AstNodeSrc, trait_name: &str, methods: &[
     }
 }
 
-pub fn extract_enum_traits(ast: &mut AstSrc) {
+pub(crate) fn extract_enum_traits(ast: &mut AstSrc) {
     for enm in &mut ast.enums {
         if enm.name == "Stmt" {
             continue;
