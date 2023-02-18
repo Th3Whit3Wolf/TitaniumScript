@@ -10,8 +10,8 @@ env:
   RUSTUP_MAX_RETRIES: 10
 
 jobs:
-  rust:
-    name: Rust
+  fmt-clippy:
+    name: Check Formating & Lints
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
@@ -37,12 +37,6 @@ jobs:
           target: ${{ matrix.target }}
           profile: default
           default: true
-      - name: Install nextest
-        uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
-
-        with:
-          command: cargo install
-          args: cargo-nextest
 
       - name: Rustfmt
         uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
@@ -50,33 +44,85 @@ jobs:
           command: cargo fmt
           args: --all -- --check
 
-      - name: Bump opt-level
-        if: matrix.os == 'ubuntu-latest'
-        run: sed -i '/\[profile.dev]/a opt-level=1' Cargo.toml
+      - name: Clippy
+        uses: FrancisRussell/ferrous-actions@v0.1.0-beta.1
+        with:
+          command: cargo clippy
+          args: --workspace -- -D warnings -D clippy::unwrap_used -A clippy::needless_collect
 
-      - name: Compile (tests)
-        run: cargo nextest run  --no-run
+  badge:
+    name: Generate Testing Badges
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Cargo Cache
+        uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
+        with:
+          command: cache
+      
+      - name: Install Rustup
+        uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
+        with:
+          command: install-rustup
+          toolchain: stable
+          target: ${{ matrix.target }}
+          profile: default
+          default: true
+  
+      - name: Install nextest
+        uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
+        with:
+          command: cargo install
+          args: cargo-nextest
 
       - name: Make badges
-        if: matrix.os == 'ubuntu-latest'
         run: |
           cargo run --package task --bin task badges
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           git add badge_data
           git commit -m "Chore(badges): Update badges"
           git push origin `git subtree split --prefix badge_data main`:badges --force
 
-      # It's faster to `test` before `build` ¯\_(ツ)_/¯
-      - name: Compile (?)
-        if: matrix.os == 'ubuntu-latest'
-        run: cargo build --quiet
+  tests:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        rust:
+          - stable
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Cargo Cache
+        uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
+        with:
+          command: cache
+      
+      - name: Install Rustup
+        uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
+        with:
+          command: install-rustup
+          toolchain: stable
+          target: ${{ matrix.target }}
+          profile: default
+          default: true
+  
+      - name: Install nextest
+        uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
+        with:
+          command: cargo install
+          args: cargo-nextest
 
       - name: Test
-        run: cargo nextest run --workspace --bins --lib --tests --examples --no-fail-fast
-
-      - name: Clippy
-        uses: actions-rs/cargo@v1
+        uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
         with:
-          command: clippy
-          args: --workspace -- -D warnings -D clippy::unwrap_used -A clippy::needless_collect
-
+          command: cargo nextest
+          args: run --workspace --bins --lib --tests --examples --no-fail-fast
 
