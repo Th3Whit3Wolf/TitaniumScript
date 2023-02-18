@@ -35,12 +35,6 @@ impl TestSummary {
 
         let mut output_split: Option<String> = None;
         if output_err.contains("Summary") {
-            println!("Yes");
-            for stuff in output_err.split('\n') {
-                if stuff.trim().starts_with("Summary") {
-                    println!("{}", stuff.trim())
-                }
-            }
             output_split = Some(
                 output_err
                     .split('\n')
@@ -58,8 +52,6 @@ impl TestSummary {
         }
         if let Some(out) = output_split {
             let datas = out.trim().split(' ').collect::<Vec<&str>>();
-            println!("{datas:?}");
-
             for idx in 0..datas.len() {
                 match datas[idx] {
                     "tests" => {
