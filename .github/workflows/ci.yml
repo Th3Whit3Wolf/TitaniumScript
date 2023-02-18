@@ -1,46 +1,71 @@
+name: Continuous integration
 on: [push, pull_request]
 
-name: Continuous integration
+env:
+  CARGO_INCREMENTAL: 0
+  CARGO_NET_RETRY: 10
+  CI: 1
+  RUST_BACKTRACE: short
+  RUSTFLAGS: "-D warnings -W unreachable-pub -W bare-trait-objects"
+  RUSTUP_MAX_RETRIES: 10
 
 jobs:
-  check:
-    name: Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
-      - run: cargo check
+  Rust:
+    strategy:
+        fail-fast: true
+        matrix:
+          # Pinning to Ubuntu 20.04 because building on newer Ubuntu versions causes linux-gnu
+          # builds to link against a too-new-for-many-Linux-installs glibc version. Consider
+          # revisiting this when 20.04 is closer to EOL (April 2025)
+          platform: [windows-latest, macos-latest, ubuntu-20.04]
+          rust:
+            - stable
 
-  test:
-    name: Test Suite
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
-      - run: cargo test
+    runs-on: ${{ matrix.platform }}
 
-  fmt:
-    name: Rustfmt
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
-          components: rustfmt
-      - run: cargo fmt
 
-  clippy:
-    name: Clippy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Rust toolchain
+        run: |
+          rustup update --no-self-update stable
+          rustup component add rustfmt rust-src clippy
+          cargo install cargo-nextest --locked
+
+      - name: Cache Dependencies
+        uses: Swatinem/rust-cache@76686c56f2b581d1bb5bda44b51f7e24bd9b8b8e
+
+      - name: Rustfmt
+        uses: actions-rs/cargo@v1
         with:
-          toolchain: stable
-          components: clippy
-      - run: cargo clippy -- -D warnings
+          command: fmt
+          args: --all -- --check
+
+      - name: Bump opt-level
+        if: matrix.os == 'ubuntu-latest'
+        run: sed -i '/\[profile.dev]/a opt-level=1' Cargo.toml
+
+      - name: Compile (tests)
+        run: cargo nextest run  --no-run 
+
+      # It's faster to `test` before `build` ¯\_(ツ)_/¯
+      - name: Compile (?)
+        if: matrix.os == 'ubuntu-latest'
+        run: cargo build --quiet
+
+      - name: Test
+        run: cargo nextest run --workspace --bins --lib --tests --examples --no-fail-fast
+
+      - name: Clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --workspace -- -D warnings -D clippy::unwrap_used -A clippy::needless_collect
+
+      - name: Make badges
+        run: |
+          cargo run --package task --bin task badges
+          git push origin `git subtree split --prefix badge_data main`:badges --force
+
