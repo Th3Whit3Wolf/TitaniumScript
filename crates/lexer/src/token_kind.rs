@@ -76,10 +76,10 @@ pub enum TokenKind {
     #[regex(r#"[-]?(((?&decimal)\.(?&decimal)(?&exp))|(?&decimal)\.(?&decimal)|((?&decimal)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Decimal, empty_exponent: false})]
     #[regex(r#"0[xX](((?&hex)\.(?&decimal)[eE][+-]?)|((?&hex)[eE][+-]?))"#, |_| LiteralKind::Float { base: Base::Hexadecimal, empty_exponent: true})]
     #[regex(r#"0[xX](((?&hex)\.(?&decimal)(?&exp))|(?&hex)\.(?&decimal)|((?&hex)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Hexadecimal, empty_exponent: false})]
-    #[regex(r#""([^"\\]|\\t|\\u|\\n|\\"|\\)*["]?"#, LiteralKind::lex_str)]
-    #[regex(r#"'([^'\\]|\\t|\\u|\\n|\\')*[']?"#, LiteralKind::lex_char)]
-    #[regex(r#"b'([^'\\]|\\t|\\u|\\n|\\')*[']?"#, LiteralKind::lex_byte)]
-    #[regex(r#"b"([^"\\]|\\t|\\u|\\n|\\")*["]?"#, LiteralKind::lex_byte_str)]
+    #[regex(r#""([^"\\]|\\t|\\u|\\n|\\"|\\|\\\\)*["]?"#, LiteralKind::lex_str)]
+    #[regex(r#"'([^'\\]|\\t|\\u|\\n|\\|\\\\')*[']?"#, LiteralKind::lex_char)]
+    #[regex(r#"b'([^'\\]|\\t|\\u|\\n|\\|\\\\')*[']?"#, LiteralKind::lex_byte)]
+    #[regex(r#"b"([^"\\]|\\t|\\u|\\n|\\|\\\\")*["]?"#, LiteralKind::lex_byte_str)]
     #[regex(r#"r[\w]*#*[\w]*#*""#, LiteralKind::lex_raw_str)]
     #[regex(r#"br[\w]*#[\w]*#*""#, LiteralKind::lex_raw_byte_str)]
     Literal(LiteralKind),
@@ -425,17 +425,40 @@ fn double_quoted_string(lex: &mut Lexer<TokenKind>) -> bool {
     // }
     // // String was not terminated.
     // false
-    lex.slice().ends_with('"')
+    // lex.slice().ends_with('"')
+
+    let slice = lex.slice();
+    //dbg!("SLICE: {:?}", &slice);
+    if slice.starts_with('\"') {
+        let (_, last) = slice.split_at(1);
+        //dbg!("last: {:?}", &slice);
+        last.ends_with('\"')
+    } else if slice.starts_with("b\"") {
+        let (_, last) = slice.split_at(2);
+        // dbg!("last: {:?}", &slice);
+
+        last.ends_with('\"')
+    } else {
+        false
+    }
 }
 
 /// Eats single-quoted string and returns true
 /// if string is terminated.
 fn single_quoted_string(lex: &mut Lexer<TokenKind>) -> bool {
     // println!("Slice: {}", lex.slice());
-    // lex.bump(1);
-    // println!("Slice: {}", lex.slice());
+    // // lex.bump(1);
+    // // println!("Slice: {}", lex.slice());
+
+    // if lex.slice() == "b'" {
+    //     lex.bump(1);
+    // }
 
     // while let Some(read) = lex.read::<u8>() {
+    //     let r_slice = vec![read];
+    //     let r_str = std::str::from_utf8(&r_slice).unwrap_or("unable to get str");
+    //     println!("Read: '{}'", r_str);
+
     //     let hint = lex.size_hint();
     //     if hint == (0, None) {
     //         break;
@@ -474,7 +497,22 @@ fn single_quoted_string(lex: &mut Lexer<TokenKind>) -> bool {
     // }
     // // String was not terminated.
     // false
-    lex.slice().ends_with('\'')
+    let slice = lex.slice();
+    //dbg!("SLICE: {:?}", &slice);
+    if slice.starts_with('\'') {
+        let (_, last) = slice.split_at(1);
+        //dbg!("last: {:?}", &slice);
+        last.ends_with('\'')
+    } else if slice.starts_with("b'") {
+        let (_, last) = slice.split_at(2);
+        // dbg!("last: {:?}", &slice);
+
+        last.ends_with('\'')
+    } else {
+        false
+    }
+    // slice.ends_with('\'')
+    //lex.slice().ends_with('\'')
 }
 
 fn raw_string(lex: &mut Lexer<TokenKind>) -> (u32, u32, Option<char>) {
