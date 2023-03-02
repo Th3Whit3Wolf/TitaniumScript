@@ -28,7 +28,7 @@ struct TestCase {
 
 impl TestCase {
     fn single(path: &'static str) -> TestCase {
-        let crate_root_dir = Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap().join("parser");
+        let crate_root_dir = Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap().join("crates_tests");
         let test_data_dir = crate_root_dir.join("test_data");
         let mut tis = test_data_dir.join(path);
 
