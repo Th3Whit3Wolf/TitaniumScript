@@ -1,5 +1,3 @@
-SHEBANG "#!/usr/bin/env bash"
-WHITESPACE "\n"
 COMMENT "// hello"
 WHITESPACE "\n"
 COMMENT "//! World"
