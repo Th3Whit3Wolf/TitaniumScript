@@ -1,4 +1,3 @@
-use logos::internal::LexerInternal;
 use logos::{Lexer, Logos};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Logos)]
@@ -24,9 +23,12 @@ pub enum TokenKind {
     ///
     /// Block comments can be recursive, so a sequence like `/* /* */`
     /// will not be considered terminated and will result in a parsing error.
-    #[token("/*", BlockCommentToken::from_lex)]
-    #[token("/*!", BlockCommentToken::from_lex)]
-    #[token("/**", BlockCommentToken::from_lex)]
+    // #[regex(r"/\*|/\*!|/\*\*", BlockCommentToken::from_lex)]
+    #[token("/**/", |_| BlockCommentToken{doc_style: None, terminated: true})]
+    #[token("/*!", |lex| lex_multiline_comment(lex, Some(DocStyle::Inner)))]
+    #[token("/**", |lex| lex_multiline_comment(lex, Some(DocStyle::Outer)))]
+    #[token("/***", |lex| lex_multiline_comment(lex, None))]
+    #[token("/*", |lex| lex_multiline_comment(lex, None))]
     BlockComment(BlockCommentToken),
 
     /// Any whitespace character sequence.
@@ -59,15 +61,12 @@ pub enum TokenKind {
     /// See [LiteralKind] for more details.
     ///
     #[regex("0[bB](?&binary)", |_|  LiteralKind::Num { base: Base::Binary, empty_int: false })]
-    #[regex("0b(?&empty_int)?", |_|  LiteralKind::Num { base: Base::Binary, empty_int: true })]
-    #[regex("0B(?&empty_int)?", |_|  LiteralKind::Num { base: Base::Binary, empty_int: true })]
+    #[regex("0[bB](?&empty_int)?", |_|  LiteralKind::Num { base: Base::Binary, empty_int: true })]
     #[regex("0[oO](?&octal)", |_|  LiteralKind::Num { base: Base::Octal, empty_int: false })]
-    #[regex("0o(?&empty_int)?", |_|  LiteralKind::Num { base: Base::Octal, empty_int: true })]
-    #[regex("0O(?&empty_int)?", |_|  LiteralKind::Num { base: Base::Octal, empty_int: true })]
+    #[regex("0[oO](?&empty_int)?", |_|  LiteralKind::Num { base: Base::Octal, empty_int: true })]
     #[regex("(?&decimal)", |_|  LiteralKind::Num { base: Base::Decimal, empty_int: false })]
     #[regex("0[xX](?&hex)", |_|  LiteralKind::Num { base: Base::Hexadecimal, empty_int: false })]
-    #[regex("0x([G-Zg-z_]+[A-Za-z0-9_]*)?", |_|  LiteralKind::Num { base: Base::Hexadecimal, empty_int: true })]
-    #[regex("0X([G-Zg-z_]+[A-Za-z0-9_]*)?", |_|  LiteralKind::Num { base: Base::Hexadecimal, empty_int: true })]
+    #[regex("0[xX]([G-Zg-z_]+[A-Za-z0-9_]*)?", |_|  LiteralKind::Num { base: Base::Hexadecimal, empty_int: true })]
     #[regex(r#"0[bB](((?&binary)\.(?&decimal)[eE][+-]?)|((?&binary)[eE][+-]?))"#, |_| LiteralKind::Float { base: Base::Binary, empty_exponent: true})]
     #[regex(r#"0[bB](((?&binary)\.(?&decimal)(?&exp))|(?&binary)\.(?&decimal)|((?&binary)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Binary, empty_exponent: false})]
     #[regex(r#"0[oO](((?&octal)\.(?&decimal)[eE][+-]?)|((?&octal)[eE][+-]?))"#, |_| LiteralKind::Float { base: Base::Octal, empty_exponent: true})]
@@ -76,12 +75,16 @@ pub enum TokenKind {
     #[regex(r#"[-]?(((?&decimal)\.(?&decimal)(?&exp))|(?&decimal)\.(?&decimal)|((?&decimal)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Decimal, empty_exponent: false})]
     #[regex(r#"0[xX](((?&hex)\.(?&decimal)[eE][+-]?)|((?&hex)[eE][+-]?))"#, |_| LiteralKind::Float { base: Base::Hexadecimal, empty_exponent: true})]
     #[regex(r#"0[xX](((?&hex)\.(?&decimal)(?&exp))|(?&hex)\.(?&decimal)|((?&hex)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Hexadecimal, empty_exponent: false})]
-    #[regex(r#""([^"\\]|\\t|\\u|\\n|\\"|\\|\\\\)*["]?"#, LiteralKind::lex_str)]
-    #[regex(r#"'([^'\\]|\\t|\\u|\\n|\\|\\\\')*[']?"#, LiteralKind::lex_char)]
-    #[regex(r#"b'([^'\\]|\\t|\\u|\\n|\\|\\\\')*[']?"#, LiteralKind::lex_byte)]
-    #[regex(r#"b"([^"\\]|\\t|\\u|\\n|\\|\\\\")*["]?"#, LiteralKind::lex_byte_str)]
-    #[regex(r#"r[\w]*#*[\w]*#*""#, LiteralKind::lex_raw_str)]
-    #[regex(r#"br[\w]*#[\w]*#*""#, LiteralKind::lex_raw_byte_str)]
+    #[token(r#"""#, LiteralKind::lex_str)]
+    #[token(r#"b""#, LiteralKind::lex_byte_str)]
+    #[token(r#"'"#, LiteralKind::lex_char)]
+    #[token(r#"b'"#, LiteralKind::lex_byte)]
+    // #[regex(r#"r[\w]*#*[\w]*#*""#, LiteralKind::lex_raw_str)]
+    #[regex(r##"r#+[\w]*#*"*"##, LiteralKind::lex_raw_str)]
+    //#[regex(r##"r#*"##, LiteralKind::lex_raw_str)]
+    // #[regex(r#"br[\w]*#*[\w]*#*""#, LiteralKind::lex_raw_byte_str)]
+    #[regex(r##"br#+[\w]*#*"*"##, LiteralKind::lex_raw_byte_str)]
+    //#[regex(r##"br#*"##, LiteralKind::lex_raw_byte_str)]
     Literal(LiteralKind),
 
     #[token("as", |_| Keywords::As)]
@@ -210,78 +213,6 @@ pub struct BlockCommentToken {
     pub terminated: bool,
 }
 
-impl BlockCommentToken {
-    fn from_lex(lex: &mut Lexer<TokenKind>) -> Self {
-        let slice = lex.slice().as_bytes();
-
-        let doc_style: Option<DocStyle> = match slice {
-            b"/*!" => Some(DocStyle::Inner),
-            b"/**" => {
-                if let Some(next) = lex.read::<u8>() {
-                    lex.bump(1);
-                    if next == b'/' {
-                        return BlockCommentToken { doc_style: None, terminated: true };
-                    } else if next != b'*' {
-                        Some(DocStyle::Outer)
-                    } else {
-                        None
-                    }
-                } else {
-                    None
-                }
-            }
-            _ => None,
-        };
-
-        let mut depth = 1usize;
-        let mut terminated = false;
-
-        loop {
-            let r = lex.read::<u8>();
-            if let Some(read) = r {
-                lex.bump(1);
-                match read {
-                    b'/' => {
-                        if let Some(asterisk) = lex.read::<u8>() {
-                            if asterisk == b'*' {
-                                depth += 1;
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                    b'*' => {
-                        if let Some(slash) = lex.read::<u8>() {
-                            if slash == b'/' {
-                                lex.bump(1);
-                                depth -= 1;
-
-                                if depth == 0 {
-                                    // This block comment is closed, so for a construction like "/* */ */"
-                                    // there will be a successfully parsed block comment "/* */"
-                                    // and " */" will be processed separately.
-                                    terminated = true;
-                                    break;
-                                }
-                            }
-                            lex.bump(1);
-                        } else {
-                            break;
-                        }
-                    }
-                    0 => break,
-                    // None => break,
-                    _ => (),
-                }
-            } else {
-                break;
-            }
-        }
-
-        BlockCommentToken { doc_style, terminated }
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum DocStyle {
     Outer,
@@ -317,36 +248,30 @@ pub enum LiteralKind {
 impl LiteralKind {
     fn lex_str(lex: &mut Lexer<TokenKind>) -> Self {
         let terminated = double_quoted_string(lex);
-
         LiteralKind::Str { terminated }
     }
     fn lex_char(lex: &mut Lexer<TokenKind>) -> Self {
         let terminated = single_quoted_string(lex);
-
         LiteralKind::Char { terminated }
     }
 
     fn lex_byte(lex: &mut Lexer<TokenKind>) -> Self {
         let terminated = single_quoted_string(lex);
-
         LiteralKind::Byte { terminated }
     }
 
     fn lex_byte_str(lex: &mut Lexer<TokenKind>) -> Self {
         let terminated = double_quoted_string(lex);
-
         LiteralKind::ByteStr { terminated }
     }
 
     fn lex_raw_str(lex: &mut Lexer<TokenKind>) -> Self {
         let (n_start_hashes, n_end_hashes, bad_char) = raw_string(lex);
-
         LiteralKind::RawStr { n_start_hashes, n_end_hashes, bad_char }
     }
 
     fn lex_raw_byte_str(lex: &mut Lexer<TokenKind>) -> Self {
         let (n_start_hashes, n_end_hashes, bad_char) = raw_string(lex);
-
         LiteralKind::RawByteStr { n_start_hashes, n_end_hashes, bad_char }
     }
 }
@@ -392,181 +317,134 @@ pub enum Keywords {
     While,
 }
 
+fn lex_multiline_comment(
+    lex: &mut Lexer<TokenKind>,
+    doc_style: Option<DocStyle>,
+) -> BlockCommentToken {
+    let mut depth = 1_usize;
+    let mut last_char = 0_u8;
+
+    for (i, b) in lex.remainder().bytes().enumerate() {
+        // let r_slice = vec![b];
+        // let r_str = std::str::from_utf8(&r_slice).unwrap_or("unable to get str");
+        // println!("Read: '{i}: {r_str}'");
+
+        match (last_char, b) {
+            (b'/', b'*') => {
+                depth += 1;
+            }
+            (b'*', b'/') => {
+                depth -= 1;
+            }
+            _ => {}
+        }
+        last_char = b;
+
+        if depth == 0 {
+            lex.bump(i + 1);
+            return BlockCommentToken { doc_style, terminated: true };
+        }
+    }
+
+    lex.bump(lex.remainder().bytes().len());
+    BlockCommentToken { doc_style, terminated: false }
+}
+
 /// Eats double-quoted string and returns true
 /// if string is terminated.
 fn double_quoted_string(lex: &mut Lexer<TokenKind>) -> bool {
-    // lex.bump(1);
-    // println!("Slice: {}", lex.slice());
-    // while let Some(read) = lex.read::<u8>() {
-    //     let hint = lex.size_hint();
-    //     if hint == (0, None) {
-    //         break;
-    //     }
+    //println!("Str: '{}'", lex.slice());
 
-    //     lex.bump(1);
+    let mut last_char = 0_u8;
 
-    //     match read {
-    //         // Quotes are terminated, finish parsing.
-    //         b'"' => {
-    //             return true;
-    //         }
-    //         // Escaped slash is considered one character, so bump twice.
-    //         b'\\' => {
-    //             if let Some(c) = lex.read::<u8>() {
-    //                 if c == b'\\' || c == b'"' {
-    //                     lex.bump(1);
-    //                 }
-    //             }
-    //         }
-    //         0 => break,
-    //         // Skip the character.
-    //         _ => (),
-    //     }
-    // }
-    // // String was not terminated.
-    // false
-    // lex.slice().ends_with('"')
+    for (i, b) in lex.remainder().bytes().enumerate() {
+        // let r_slice = vec![b];
+        // let r_str = std::str::from_utf8(&r_slice).unwrap_or("unable to get str");
+        // println!("Read: '{i}: {r_str}'");
 
-    let slice = lex.slice();
-    //dbg!("SLICE: {:?}", &slice);
-    if slice.starts_with('\"') {
-        let (_, last) = slice.split_at(1);
-        //dbg!("last: {:?}", &slice);
-        last.ends_with('\"')
-    } else if slice.starts_with("b\"") {
-        let (_, last) = slice.split_at(2);
-        // dbg!("last: {:?}", &slice);
-
-        last.ends_with('\"')
-    } else {
-        false
+        if b == b'"' && last_char != b'\\' && !(i == 1 && last_char == b'b') {
+            lex.bump(i + 1);
+            return true;
+        }
+        last_char = b;
     }
+    lex.bump(lex.remainder().bytes().len());
+    false
 }
 
 /// Eats single-quoted string and returns true
 /// if string is terminated.
 fn single_quoted_string(lex: &mut Lexer<TokenKind>) -> bool {
-    // println!("Slice: {}", lex.slice());
-    // // lex.bump(1);
-    // // println!("Slice: {}", lex.slice());
+    //println!("Str: '{}'", lex.slice());
 
-    // if lex.slice() == "b'" {
-    //     lex.bump(1);
-    // }
+    let mut last_char = 0_u8;
 
-    // while let Some(read) = lex.read::<u8>() {
-    //     let r_slice = vec![read];
-    //     let r_str = std::str::from_utf8(&r_slice).unwrap_or("unable to get str");
-    //     println!("Read: '{}'", r_str);
+    for (i, b) in lex.remainder().bytes().enumerate() {
+        // let r_slice = vec![b];
+        // let r_str = std::str::from_utf8(&r_slice).unwrap_or("unable to get str");
+        // println!("Read: '{i}: {r_str}'");
 
-    //     let hint = lex.size_hint();
-    //     if hint == (0, None) {
-    //         break;
-    //     }
-
-    //     lex.bump(1);
-    //     match read {
-    //         // Quotes are terminated, finish parsing.
-    //         b'\'' => {
-    //             return true;
-    //         }
-    //         // Probably beginning of the comment, which we don't want to include
-    //         // to the error report.
-    //         b'/' => {
-    //             break;
-    //         }
-    //         // Newline without following '\'' means unclosed quote, stop parsing.
-    //         b'\n' => {
-    //             if let Some(c) = lex.read::<u8>() {
-    //                 if c == b'\'' {
-    //                     lex.bump(1);
-    //                     return true;
-    //                 }
-    //             } else {
-    //                 break;
-    //             }
-    //         }
-    //         // Escaped slash is considered one character, so bump twice.
-    //         b'\\' => {
-    //             lex.bump(1);
-    //         }
-    //         0 => break,
-    //         // Skip the character.
-    //         _ => (),
-    //     }
-    // }
-    // // String was not terminated.
-    // false
-    let slice = lex.slice();
-    //dbg!("SLICE: {:?}", &slice);
-    if slice.starts_with('\'') {
-        let (_, last) = slice.split_at(1);
-        //dbg!("last: {:?}", &slice);
-        last.ends_with('\'')
-    } else if slice.starts_with("b'") {
-        let (_, last) = slice.split_at(2);
-        // dbg!("last: {:?}", &slice);
-
-        last.ends_with('\'')
-    } else {
-        false
+        if b == b'\'' && last_char != b'\\' && !(i == 1 && last_char == b'b') {
+            lex.bump(i + 1);
+            return true;
+        }
+        last_char = b;
     }
-    // slice.ends_with('\'')
-    //lex.slice().ends_with('\'')
+    lex.bump(lex.remainder().bytes().len());
+    false
 }
 
 fn raw_string(lex: &mut Lexer<TokenKind>) -> (u32, u32, Option<char>) {
     let mut n_start_hashes: u32 = 0;
     let mut n_end_hashes: u32 = 0;
     let mut bad_char: Option<char> = None;
-    let slice = lex.slice();
+    let mut last_char = 0_u8;
 
-    let chars = if slice.starts_with("br") {
-        slice[2..slice.len() - 1].chars()
-    } else {
-        slice[1..slice.len() - 1].chars()
-    };
-
-    for char in chars {
-        if char == '#' {
-            n_start_hashes += 1;
-        } else if bad_char.is_none() {
-            bad_char = Some(char)
-        }
-    }
-
-    let mut start = false;
-
-    loop {
-        let r = lex.read::<u8>();
-
-        if let Some(read) = r {
-            lex.bump(1);
-            match read {
-                // Quotes are terminated, finish parsing.
-                b'"' => start = true,
-                // Escaped slash is considered one character, so bump twice.
-                b'#' => {
-                    if start && n_end_hashes < n_start_hashes {
-                        n_end_hashes += 1
-                    }
-                }
-                0 => break,
-                // Skip the character.
-                _ => {
-                    if start {
-                        // Reset start
-                        start = false
-                    }
+    for char in lex.slice().chars() {
+        match char {
+            '#' => n_start_hashes += 1,
+            '"' => {}
+            _ => {
+                if n_start_hashes > 0 {
+                    bad_char = Some(char)
                 }
             }
-        } else {
-            break;
-        }
-        if n_start_hashes > 0 && n_end_hashes == n_start_hashes {
-            break;
         }
     }
 
+    for (i, b) in lex.remainder().bytes().enumerate() {
+        // let r_slice = vec![b];
+        // let r_str = std::str::from_utf8(&r_slice).unwrap_or("unable to get str");
+        // println!("Read: '{i}: {r_str}'");
+
+        match b {
+            b'"' => {
+                if n_start_hashes == 0 {
+                    lex.bump(i + 1);
+                    return (n_start_hashes, n_end_hashes, bad_char);
+                }
+            }
+            b'#' => {
+                if n_start_hashes == n_end_hashes {
+                    lex.bump(i + 1);
+                    return (n_start_hashes, n_end_hashes, bad_char);
+                }
+                if last_char == b'"' {
+                    n_end_hashes = 1;
+                } else {
+                    n_end_hashes += 1
+                }
+            }
+            // Skip the character.
+            _ => {
+                if n_end_hashes > 0 {
+                    n_end_hashes = 0
+                }
+            }
+        }
+        last_char = b;
+    }
+
+    lex.bump(lex.remainder().bytes().len());
     (n_start_hashes, n_end_hashes, bad_char)
 }

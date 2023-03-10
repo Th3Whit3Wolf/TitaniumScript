@@ -1,5 +1,5 @@
 mod token_kind;
-pub use token_kind::{Base, BlockCommentToken, Keywords, LiteralKind, TokenKind};
+pub use token_kind::{Base, BlockCommentToken, DocStyle, Keywords, LiteralKind, TokenKind};
 
 use logos::Logos;
 use std::convert::TryFrom;
