@@ -80,10 +80,10 @@ pub enum TokenKind {
     #[token(r#"'"#, LiteralKind::lex_char)]
     #[token(r#"b'"#, LiteralKind::lex_byte)]
     // #[regex(r#"r[\w]*#*[\w]*#*""#, LiteralKind::lex_raw_str)]
-    #[regex(r##"r#+[\w]*#*"*"##, LiteralKind::lex_raw_str)]
+    #[regex(r##"r#*[\w]*#*"*"##, LiteralKind::lex_raw_str)]
     //#[regex(r##"r#*"##, LiteralKind::lex_raw_str)]
     // #[regex(r#"br[\w]*#*[\w]*#*""#, LiteralKind::lex_raw_byte_str)]
-    #[regex(r##"br#+[\w]*#*"*"##, LiteralKind::lex_raw_byte_str)]
+    #[regex(r##"br#*[\w]*#*"*"##, LiteralKind::lex_raw_byte_str)]
     //#[regex(r##"br#*"##, LiteralKind::lex_raw_byte_str)]
     Literal(LiteralKind),
 
