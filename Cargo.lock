@@ -265,8 +265,10 @@ version = "0.0.0"
 dependencies = [
  "lexer",
  "parser",
+ "rustc-ap-rustc_lexer",
  "similar-asserts",
  "test-utils",
+ "text-size",
 ]
 
 [[package]]
