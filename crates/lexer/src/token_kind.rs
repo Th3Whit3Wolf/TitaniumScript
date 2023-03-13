@@ -60,21 +60,21 @@ pub enum TokenKind {
     ///
     /// See [LiteralKind] for more details.
     ///
-    #[regex("0[bB](?&binary)", |_|  LiteralKind::Num { base: Base::Binary, empty_int: false })]
-    #[regex("0[bB](?&empty_int)?", |_|  LiteralKind::Num { base: Base::Binary, empty_int: true })]
-    #[regex("0[oO](?&octal)", |_|  LiteralKind::Num { base: Base::Octal, empty_int: false })]
-    #[regex("0[oO](?&empty_int)?", |_|  LiteralKind::Num { base: Base::Octal, empty_int: true })]
+    #[regex("0b(?&binary)", |_|  LiteralKind::Num { base: Base::Binary, empty_int: false })]
+    #[regex("0b(?&empty_int)?", |_|  LiteralKind::Num { base: Base::Binary, empty_int: true })]
+    #[regex("0o(?&octal)", |_|  LiteralKind::Num { base: Base::Octal, empty_int: false })]
+    #[regex("0o(?&empty_int)?", |_|  LiteralKind::Num { base: Base::Octal, empty_int: true })]
     #[regex("(?&decimal)", |_|  LiteralKind::Num { base: Base::Decimal, empty_int: false })]
-    #[regex("0[xX](?&hex)", |_|  LiteralKind::Num { base: Base::Hexadecimal, empty_int: false })]
-    #[regex("0[xX]([G-Zg-z_]+[A-Za-z0-9_]*)?", |_|  LiteralKind::Num { base: Base::Hexadecimal, empty_int: true })]
-    #[regex(r#"0[bB](((?&binary)\.(?&decimal)[eE][+-]?)|((?&binary)[eE][+-]?))"#, |_| LiteralKind::Float { base: Base::Binary, empty_exponent: true})]
-    #[regex(r#"0[bB](((?&binary)\.(?&decimal)(?&exp))|(?&binary)\.(?&decimal)|((?&binary)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Binary, empty_exponent: false})]
-    #[regex(r#"0[oO](((?&octal)\.(?&decimal)[eE][+-]?)|((?&octal)[eE][+-]?))"#, |_| LiteralKind::Float { base: Base::Octal, empty_exponent: true})]
-    #[regex(r#"0[oO](((?&octal)\.(?&decimal)(?&exp))|(?&octal)\.(?&decimal)|((?&octal)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Octal, empty_exponent: false})]
+    #[regex("0x(?&hex)", |_|  LiteralKind::Num { base: Base::Hexadecimal, empty_int: false })]
+    #[regex("0x([G-Zg-z_]+[A-Za-z0-9_]*)?", |_|  LiteralKind::Num { base: Base::Hexadecimal, empty_int: true })]
+    #[regex(r#"0b(((?&binary)\.(?&decimal)[eE][+-]?)|((?&binary)[eE][+-]?))"#, |_| LiteralKind::Float { base: Base::Binary, empty_exponent: true})]
+    #[regex(r#"0b(((?&binary)\.(?&decimal)(?&exp))|(?&binary)\.(?&decimal)|((?&binary)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Binary, empty_exponent: false})]
+    #[regex(r#"0o(((?&octal)\.(?&decimal)[eE][+-]?)|((?&octal)[eE][+-]?))"#, |_| LiteralKind::Float { base: Base::Octal, empty_exponent: true})]
+    #[regex(r#"0o(((?&octal)\.(?&decimal)(?&exp))|(?&octal)\.(?&decimal)|((?&octal)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Octal, empty_exponent: false})]
     #[regex(r#"[-]?(((?&decimal)\.(?&decimal)(?&nexp))|((?&decimal)(?&nexp)))"#, |_| LiteralKind::Float { base: Base::Decimal, empty_exponent: true})]
     #[regex(r#"[-]?(((?&decimal)\.(?&decimal)(?&exp))|(?&decimal)\.(?&decimal)|((?&decimal)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Decimal, empty_exponent: false})]
-    #[regex(r#"0[xX](((?&hex)\.(?&decimal)[eE][+-]?)|((?&hex)[eE][+-]?))"#, |_| LiteralKind::Float { base: Base::Hexadecimal, empty_exponent: true})]
-    #[regex(r#"0[xX](((?&hex)\.(?&decimal)(?&exp))|(?&hex)\.(?&decimal)|((?&hex)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Hexadecimal, empty_exponent: false})]
+    #[regex(r#"0x(((?&hex)\.(?&decimal)[eE][+-]?)|((?&hex)[eE][+-]?))"#, |_| LiteralKind::Float { base: Base::Hexadecimal, empty_exponent: true})]
+    #[regex(r#"0x(((?&hex)\.(?&decimal)(?&exp))|(?&hex)\.(?&decimal)|((?&hex)(?&exp)))"#, |_| LiteralKind::Float { base: Base::Hexadecimal, empty_exponent: false})]
     #[token(r#"""#, LiteralKind::lex_str)]
     #[token(r#"b""#, LiteralKind::lex_byte_str)]
     #[token(r#"'"#, LiteralKind::lex_char)]
@@ -388,6 +388,16 @@ fn single_quoted_string(lex: &mut Lexer<TokenKind>) -> bool {
             lex.bump(i + 1);
             return true;
         }
+
+        if last_char == b'\n' {
+            lex.bump(i - 1);
+            return false;
+        }
+
+        if last_char == b'/' {
+            lex.bump(i + 1);
+            return false;
+        }
         last_char = b;
     }
     lex.bump(lex.remainder().bytes().len());
@@ -431,7 +441,7 @@ fn raw_string(lex: &mut Lexer<TokenKind>) -> (u32, u32, Option<char>) {
                 }
                 if last_char == b'"' {
                     n_end_hashes = 1;
-                } else {
+                } else if n_end_hashes > 0 {
                     n_end_hashes += 1
                 }
             }
