@@ -11,12 +11,12 @@ mod literal {
 
             #[test]
             fn terminated() {
-                check(r#"b"a""#, TokenKind::Literal(LiteralKind::ByteStr { terminated: true }))
+                check(r#"b"a""#)
             }
 
             #[test]
             fn unterminated() {
-                check(r#"b"a"#, TokenKind::Literal(LiteralKind::ByteStr { terminated: false }))
+                check(r#"b"a"#)
             }
         }
 
@@ -30,7 +30,6 @@ mod literal {
                     r#"b"
         a
         ""#,
-                    TokenKind::Literal(LiteralKind::ByteStr { terminated: true }),
                 )
             }
 
@@ -39,7 +38,6 @@ mod literal {
                 check(
                     r#"b"a
         "#,
-                    TokenKind::Literal(LiteralKind::ByteStr { terminated: false }),
                 )
             }
         }

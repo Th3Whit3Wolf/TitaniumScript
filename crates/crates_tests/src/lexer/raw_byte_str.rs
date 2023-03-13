@@ -11,37 +11,20 @@ mod literal {
 
             #[test]
             fn correct() {
-                check(
-                    "br##\"bar\"##",
-                    TokenKind::Literal(LiteralKind::RawByteStr {
-                        n_start_hashes: 2,
-                        n_end_hashes: 2,
-                        bad_char: None,
-                    }),
-                )
+                check("br##\"bar\"##")
             }
 
             #[test]
             fn no_terminator() {
-                check(
-                    "br###\"bar\"#",
-                    TokenKind::Literal(LiteralKind::RawByteStr {
-                        n_start_hashes: 3,
-                        n_end_hashes: 1,
-                        bad_char: None,
-                    }),
-                )
+                check("br###\"bar\"#")
             }
 
             #[test]
             fn invalid_char() {
                 check(
-                    "br#a#\"bar\"##",
-                    TokenKind::Literal(LiteralKind::RawByteStr {
-                        n_start_hashes: 2,
-                        n_end_hashes: 2,
-                        bad_char: Some('a'),
-                    }),
+                    r##"
+                    br#~"abc"#
+                    "##,
                 )
             }
         }
@@ -56,40 +39,22 @@ mod literal {
                     r####"br##"
                 abc
             "##"####,
-                    TokenKind::Literal(LiteralKind::RawByteStr {
-                        n_start_hashes: 2,
-                        n_end_hashes: 2,
-                        bad_char: None,
-                    }),
                 )
             }
 
             #[test]
             fn no_terminator() {
                 check(
-                    r####"br###"
-                abc
-            "#
-"####,
-                    TokenKind::Literal(LiteralKind::RawByteStr {
-                        n_start_hashes: 3,
-                        n_end_hashes: 1,
-                        bad_char: None,
-                    }),
+                    r###"br##"a
+bc#"###,
                 )
             }
 
             #[test]
             fn invalid_char() {
                 check(
-                    r####"br#a#"
-                abc
-            "##"####,
-                    TokenKind::Literal(LiteralKind::RawByteStr {
-                        n_start_hashes: 2,
-                        n_end_hashes: 2,
-                        bad_char: Some('a'),
-                    }),
+                    r####"r##"#~"a
+                    bc"#"##"####,
                 )
             }
         }

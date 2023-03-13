@@ -10,12 +10,12 @@ mod literal {
 
             #[test]
             fn terminated() {
-                check("b'a'", TokenKind::Literal(LiteralKind::Byte { terminated: true }))
+                check("b'a'")
             }
 
             #[test]
             fn unterminated() {
-                check("b'a", TokenKind::Literal(LiteralKind::Byte { terminated: false }))
+                check("b'a")
             }
         }
 
@@ -28,7 +28,6 @@ mod literal {
                 check(
                     r#"b'a
         '"#,
-                    TokenKind::Literal(LiteralKind::Byte { terminated: true }),
                 )
             }
 
@@ -37,7 +36,6 @@ mod literal {
                 check(
                     r#"b'a
                 "#,
-                    TokenKind::Literal(LiteralKind::Byte { terminated: false }),
                 )
             }
         }

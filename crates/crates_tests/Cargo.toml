@@ -7,6 +7,8 @@ edition = "2021"
 
 [dependencies]
 similar-asserts = "1.4.2"
+rustc_lexer = { version = "727.0.0", package = "rustc-ap-rustc_lexer" }
+text-size = "1.1.0"
 
 lexer.workspace = true
 parser.workspace = true
