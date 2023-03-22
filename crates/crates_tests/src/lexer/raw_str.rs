@@ -23,6 +23,11 @@ mod literal {
             fn invalid_char() {
                 check(r##"#~"abc"#"##)
             }
+
+            #[test]
+            fn unstarted_with_ascii() {
+                check(r###"r## I lack a quote!"###)
+            }
         }
 
         #[cfg(test)]

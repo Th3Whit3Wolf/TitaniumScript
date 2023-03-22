@@ -15,17 +15,18 @@ mod literal {
             }
 
             #[test]
+            fn empty() {
+                check("br\"\" ")
+            }
+
+            #[test]
             fn no_terminator() {
                 check("br###\"bar\"#")
             }
 
             #[test]
             fn invalid_char() {
-                check(
-                    r##"
-                    br#~"abc"#
-                    "##,
-                )
+                check(r##"br#~"abc"#"##)
             }
         }
 

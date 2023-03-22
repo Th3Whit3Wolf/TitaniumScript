@@ -44,6 +44,11 @@ mod literal {
             fn lower() {
                 check("200")
             }
+
+            #[test]
+            fn range() {
+                check("0..2")
+            }
         }
 
         #[cfg(test)]
