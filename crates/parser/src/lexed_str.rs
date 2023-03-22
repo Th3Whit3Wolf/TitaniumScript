@@ -43,7 +43,7 @@ impl<'a> LexedStr<'a> {
         // }
 
         while let Some(token) = Lexer::new(&text[conv.offset..]).next() {
-            dbg!("{:?}", &token);
+            //dbg!("{:?}", &token);
             let token_text = token.text;
             conv.extend_token(&token.kind, token_text);
         }
@@ -249,6 +249,7 @@ impl<'a> Converter<'a> {
                     lexer::Keywords::Let => LET_KW,
                     lexer::Keywords::Loop => LOOP_KW,
                     lexer::Keywords::Match => MATCH_KW,
+                    lexer::Keywords::Return => RETURN_KW,
                     lexer::Keywords::SelfLower => SELF_KW,
                     lexer::Keywords::SelfUpper => SELF_TYPE_KW,
                     lexer::Keywords::Trait => TRAIT_KW,
