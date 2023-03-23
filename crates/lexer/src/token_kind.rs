@@ -22,15 +22,6 @@ pub enum TokenKind {
     BlockComment(BlockCommentToken),
 
     /// Any whitespace character sequence.
-    #[token(r"\u{0009}")] // \t
-    #[token(r"\u{000A}")] // \n
-    #[token(r"\u{000B}")] // vertical tab
-    #[token(r"\u{000C}")] // form feed
-    #[token(r"\u{0085}")] // NEXT LINE from latin1
-    #[token(r"\u{200E}")] // LEFT-TO-RIGHT MARK
-    #[token(r"\u{200F}")] // RIGHT-TO-LEFT MARK
-    #[token(r"\u{2028}")] // LINE SEPARATOR
-    #[token(r"\u{2029}")] // PARAGRAPH SEPARATOR
     #[regex("[\t\r \u{0009}\u{000A}\u{000B}\u{000C}\u{0085}\u{200E}\u{200F}\u{2028}\u{2029}\n]+")]
     Whitespace,
 
@@ -50,19 +41,15 @@ pub enum TokenKind {
     ///
     /// See [LiteralKind] for more details.
     ///
-    #[regex("0b", |lex| eat_suffix(lex); LiteralKind::Num { base: Base::Binary, empty_int: true })]
-    #[regex("0o", |lex| eat_suffix(lex); LiteralKind::Num { base: Base::Octal, empty_int: true })]
-    #[regex("0x", |lex| eat_suffix(lex); LiteralKind::Num { base: Base::Hexadecimal, empty_int: true })]
+    #[regex("0b[_]?", |_| LiteralKind::Num { base: Base::Binary, empty_int: true })]
+    #[regex("0o[_]?", |_| LiteralKind::Num { base: Base::Octal, empty_int: true })]
+    #[regex("0x[_]?", |_| LiteralKind::Num { base: Base::Hexadecimal, empty_int: true })]
     #[regex("0b[0-9]+[0-9_]*", |lex| LiteralKind::lex_num(lex, Base::Binary))]
     #[regex("0o[0-9]+[0-9_]*", |lex| LiteralKind::lex_num(lex, Base::Octal))]
     #[regex("0x[0-9a-fA-F]+[0-9a-fA-F_]*", |lex| LiteralKind::lex_num(lex, Base::Hexadecimal) )]
     #[regex("[0-9][0-9_]*", |lex| LiteralKind::lex_num(lex, Base::Decimal) )]
-    #[token(r#"""#, LiteralKind::lex_str)]
-    #[token(r#"b""#, LiteralKind::lex_byte_str)]
-    #[token(r#"'"#, LiteralKind::lex_char)]
-    #[token(r#"b'"#, LiteralKind::lex_byte)]
-    #[token("r", LiteralKind::lex_raw_str)]
-    #[token("br", LiteralKind::lex_raw_byte_str)]
+    #[regex("b'|'", LiteralKind::lex_single_quote)]
+    #[regex("b\"|\"", LiteralKind::lex_double_quote)]
     Literal(LiteralKind),
 
     #[token("as", |_| Keywords::As)]
@@ -216,12 +203,6 @@ pub enum LiteralKind {
     Str { terminated: bool },
     /// "b"abc"", "b"abc"
     ByteStr { terminated: bool },
-    /// "r"abc"", "r#"abc"#", "r####"ab"###"c"####", "r#"a". `None` indicates
-    /// an invalid literal.
-    RawStr { n_start_hashes: u32, n_end_hashes: u32, bad_char: Option<char> },
-    /// "br"abc"", "br#"abc"#", "br####"ab"###"c"####", "br#"a". `None`
-    /// indicates an invalid literal.
-    RawByteStr { n_start_hashes: u32, n_end_hashes: u32, bad_char: Option<char> },
 }
 
 impl LiteralKind {
@@ -249,7 +230,6 @@ impl LiteralKind {
                                     }
                                 }
                             }
-                            eat_suffix(lex);
                             LiteralKind::Float { base, empty_exponent }
                         } else {
                             LiteralKind::Num { base, empty_int: false }
@@ -261,51 +241,34 @@ impl LiteralKind {
                 'e' | 'E' => {
                     lex.bump(1);
                     let empty_exponent = !eat_float_exponent(lex);
-                    eat_suffix(lex);
                     LiteralKind::Float { base, empty_exponent }
                 }
-                _ => {
-                    eat_suffix(lex);
-                    LiteralKind::Num { base, empty_int: false }
-                }
+                _ => LiteralKind::Num { base, empty_int: false },
             }
         } else {
-            eat_suffix(lex);
             LiteralKind::Num { base, empty_int: false }
         }
     }
 
-    fn lex_str(lex: &mut Lexer<TokenKind>) -> Self {
+    fn lex_single_quote(lex: &mut Lexer<TokenKind>) -> Self {
+        let is_char = lex.slice().len() == 1;
+        let terminated = single_quoted_string(lex);
+        if is_char {
+            LiteralKind::Char { terminated }
+        } else {
+            LiteralKind::Byte { terminated }
+        }
+    }
+
+    fn lex_double_quote(lex: &mut Lexer<TokenKind>) -> Self {
+        let is_str = lex.slice().len() == 1;
+
         let terminated = double_quoted_string(lex);
-        LiteralKind::Str { terminated }
-    }
-    fn lex_char(lex: &mut Lexer<TokenKind>) -> Self {
-        let terminated = single_quoted_string(lex);
-        LiteralKind::Char { terminated }
-    }
-
-    fn lex_byte(lex: &mut Lexer<TokenKind>) -> Self {
-        let terminated = single_quoted_string(lex);
-        eat_suffix(lex);
-        LiteralKind::Byte { terminated }
-    }
-
-    fn lex_byte_str(lex: &mut Lexer<TokenKind>) -> Self {
-        let terminated = double_quoted_str(lex);
-        eat_suffix(lex);
-        LiteralKind::ByteStr { terminated }
-    }
-
-    fn lex_raw_str(lex: &mut Lexer<TokenKind>) -> Self {
-        let (n_start_hashes, n_end_hashes, bad_char) = raw_string(lex);
-        eat_suffix(lex);
-        LiteralKind::RawStr { n_start_hashes, n_end_hashes, bad_char }
-    }
-
-    fn lex_raw_byte_str(lex: &mut Lexer<TokenKind>) -> Self {
-        let (n_start_hashes, n_end_hashes, bad_char) = raw_string(lex);
-        eat_suffix(lex);
-        LiteralKind::RawByteStr { n_start_hashes, n_end_hashes, bad_char }
+        if is_str {
+            LiteralKind::Str { terminated }
+        } else {
+            return LiteralKind::ByteStr { terminated };
+        }
     }
 }
 
@@ -366,7 +329,7 @@ fn lex_multiline_comment(
             (b'*', b'/') => {
                 depth -= 1;
             }
-            _ => {}
+            _ => (),
         }
         last_char = b;
 
@@ -383,29 +346,12 @@ fn lex_multiline_comment(
 /// Eats double-quoted string and returns true
 /// if string is terminated.
 fn double_quoted_string(lex: &mut Lexer<TokenKind>) -> bool {
-    let mut last_char = 0_u8;
+    let mut last_char = b'"';
 
     for (i, b) in lex.remainder().bytes().enumerate() {
         if b == b'"' && last_char != b'\\' && !(i == 1 && last_char == b'b') {
             lex.bump(i + 1);
             return true;
-        }
-        last_char = b;
-    }
-    lex.bump(lex.remainder().bytes().len());
-    false
-}
-
-fn double_quoted_str(lex: &mut Lexer<TokenKind>) -> bool {
-    let mut last_char = 0_u8;
-
-    for (i, b) in lex.remainder().bytes().enumerate() {
-        match b {
-            b'"' if last_char != b'\\' => {
-                lex.bump(i + 1);
-                return true;
-            }
-            _ => (),
         }
         last_char = b;
     }
@@ -444,68 +390,12 @@ fn single_quoted_string(lex: &mut Lexer<TokenKind>) -> bool {
     false
 }
 
-fn raw_string(lex: &mut Lexer<TokenKind>) -> (u32, u32, Option<char>) {
-    let mut n_start_hashes: u32 = 0;
-    let mut n_end_hashes: u32 = 0;
-    let mut bad_char: Option<char> = None;
-    let mut last_char = '\0'; //0_u8;
-    let mut start_quote = false;
-
-    for (i, char) in lex.remainder().chars().enumerate() {
-        if start_quote {
-            if n_start_hashes == n_end_hashes {
-                lex.bump(i);
-                return (n_start_hashes, n_end_hashes, bad_char);
-            }
-            match char {
-                '"' => (),
-                '#' => {
-                    if last_char == '"' {
-                        n_end_hashes = 1
-                    } else if n_end_hashes > 0 {
-                        n_end_hashes += 1
-                    }
-                }
-                // Skip the character.
-                _ => n_end_hashes = 0,
-            }
-        } else {
-            match char {
-                '"' => {
-                    start_quote = true;
-                }
-                '#' => n_start_hashes += 1,
-                // Skip the character.
-                _ => {
-                    if bad_char == None {
-                        bad_char = Some(char)
-                    }
-                }
-            }
-        }
-
-        last_char = char;
-    }
-
-    lex.bump(lex.remainder().bytes().len());
-    (n_start_hashes, n_end_hashes, bad_char)
-}
-
 /// True if `c` is valid as a first character of an identifier.
 /// See [Rust language reference](https://doc.rust-lang.org/reference/identifiers.html) for
 /// a formal definition of valid identifier name.
 pub fn is_id_start(c: char) -> bool {
     // This is XID_Start OR '_' (which formally is not a XID_Start).
     c == '_' || unicode_xid::UnicodeXID::is_xid_start(c)
-}
-
-fn eat_suffix(lex: &mut Lexer<TokenKind>) {
-    for (i, char) in lex.remainder().chars().enumerate() {
-        if char.is_whitespace() {
-            lex.bump(i);
-            break;
-        }
-    }
 }
 
 fn eat_decimal_digits(lex: &mut Lexer<TokenKind>) -> bool {

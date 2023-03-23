@@ -14,10 +14,7 @@ mod comments;
 mod float;
 #[cfg(test)]
 mod num;
-#[cfg(test)]
-mod raw_byte_str;
-#[cfg(test)]
-mod raw_str;
+
 #[cfg(test)]
 mod str;
 
@@ -74,70 +71,8 @@ pub(crate) fn convert_token(token: rustc_lexer::TokenKind) -> TokenKind {
             rustc_lexer::LiteralKind::ByteStr { terminated } => {
                 TokenKind::Literal(LiteralKind::ByteStr { terminated })
             }
-            rustc_lexer::LiteralKind::RawStr { n_hashes, err } => match err {
-                Some(e) => match e {
-                    rustc_lexer::RawStrError::InvalidStarter { bad_char } => {
-                        TokenKind::Literal(LiteralKind::RawStr {
-                            n_start_hashes: n_hashes as u32,
-                            n_end_hashes: n_hashes as u32,
-                            bad_char: Some(bad_char),
-                        })
-                    }
-                    rustc_lexer::RawStrError::NoTerminator {
-                        expected: _,
-                        found,
-                        possible_terminator_offset: _,
-                    } => TokenKind::Literal(LiteralKind::RawStr {
-                        n_start_hashes: n_hashes as u32,
-                        n_end_hashes: found as u32,
-                        bad_char: None,
-                    }),
-                    rustc_lexer::RawStrError::TooManyDelimiters { found } => {
-                        TokenKind::Literal(LiteralKind::RawStr {
-                            n_start_hashes: n_hashes as u32,
-                            n_end_hashes: found as u32,
-                            bad_char: None,
-                        })
-                    }
-                },
-                None => TokenKind::Literal(LiteralKind::RawStr {
-                    n_start_hashes: n_hashes as u32,
-                    n_end_hashes: n_hashes as u32,
-                    bad_char: None,
-                }),
-            },
-            rustc_lexer::LiteralKind::RawByteStr { n_hashes, err } => match err {
-                Some(e) => match e {
-                    rustc_lexer::RawStrError::InvalidStarter { bad_char } => {
-                        TokenKind::Literal(LiteralKind::RawByteStr {
-                            n_start_hashes: n_hashes as u32,
-                            n_end_hashes: n_hashes as u32,
-                            bad_char: Some(bad_char),
-                        })
-                    }
-                    rustc_lexer::RawStrError::NoTerminator {
-                        expected: _,
-                        found,
-                        possible_terminator_offset: _,
-                    } => TokenKind::Literal(LiteralKind::RawByteStr {
-                        n_start_hashes: n_hashes as u32,
-                        n_end_hashes: found as u32,
-                        bad_char: None,
-                    }),
-                    rustc_lexer::RawStrError::TooManyDelimiters { found } => {
-                        TokenKind::Literal(LiteralKind::RawByteStr {
-                            n_start_hashes: n_hashes as u32,
-                            n_end_hashes: found as u32,
-                            bad_char: None,
-                        })
-                    }
-                },
-                None => TokenKind::Literal(LiteralKind::RawByteStr {
-                    n_start_hashes: n_hashes as u32,
-                    n_end_hashes: n_hashes as u32,
-                    bad_char: None,
-                }),
-            },
+            rustc_lexer::LiteralKind::RawStr { n_hashes: _, err: _ } => unreachable!(),
+            rustc_lexer::LiteralKind::RawByteStr { n_hashes: _, err: _ } => unreachable!(),
         },
         rustc_lexer::TokenKind::Lifetime { starts_with_number: _ } => unreachable!(),
         rustc_lexer::TokenKind::Semi => TokenKind::Semi,
@@ -176,82 +111,13 @@ pub(crate) fn check(input: &str) {
     let token = lexer.next().unwrap();
     let mut rustc_lexer = rustc_tokenize(input);
     let rustc_token_raw = rustc_lexer.next().unwrap();
-    let mut rustc_token = convert_token(rustc_token_raw.kind);
-
-    let bad_char = match token.kind {
-        TokenKind::Literal(lit) => match lit {
-            LiteralKind::RawStr { n_start_hashes: _, n_end_hashes: real_end_hashes, bad_char } => {
-                match rustc_token {
-                    TokenKind::Literal(lit) => match lit {
-                        LiteralKind::RawStr { n_start_hashes: s, n_end_hashes: _, bad_char: b } => {
-                            rustc_token = TokenKind::Literal(LiteralKind::RawStr {
-                                n_start_hashes: s,
-                                n_end_hashes: real_end_hashes,
-                                bad_char: b,
-                            })
-                        }
-                        LiteralKind::RawByteStr {
-                            n_start_hashes: s,
-                            n_end_hashes: _,
-                            bad_char: b,
-                        } => {
-                            rustc_token = TokenKind::Literal(LiteralKind::RawByteStr {
-                                n_start_hashes: s,
-                                n_end_hashes: real_end_hashes,
-                                bad_char: b,
-                            })
-                        }
-                        _ => (),
-                    },
-                    _ => (),
-                }
-                bad_char.is_some()
-            }
-            LiteralKind::RawByteStr {
-                n_start_hashes: _,
-                n_end_hashes: real_end_hashes,
-                bad_char,
-            } => {
-                match rustc_token {
-                    TokenKind::Literal(lit) => match lit {
-                        LiteralKind::RawStr { n_start_hashes: s, n_end_hashes: _, bad_char: b } => {
-                            rustc_token = TokenKind::Literal(LiteralKind::RawStr {
-                                n_start_hashes: s,
-                                n_end_hashes: real_end_hashes,
-                                bad_char: b,
-                            })
-                        }
-                        LiteralKind::RawByteStr {
-                            n_start_hashes: s,
-                            n_end_hashes: _,
-                            bad_char: b,
-                        } => {
-                            rustc_token = TokenKind::Literal(LiteralKind::RawByteStr {
-                                n_start_hashes: s,
-                                n_end_hashes: real_end_hashes,
-                                bad_char: b,
-                            })
-                        }
-                        _ => (),
-                    },
-                    _ => (),
-                }
-                bad_char.is_some()
-            }
-            _ => false,
-        },
-        _ => false,
-    };
+    let rustc_token = convert_token(rustc_token_raw.kind);
 
     // dbg!("Input: {}\nRust: {:?}\nTI: {:?}", input, &rustc_token_raw, &token);
 
-    // println!("INPUT: {input}");
+    println!("INPUT: `{input}`");
     assert_eq!(token.kind, rustc_token);
-
-    if !bad_char {
-        assert_eq!(token.range.end(), text_size::TextSize::from(rustc_token_raw.len as u32));
-    }
-    // assert_eq!(token.text, input);
+    assert_eq!(token.range.end(), text_size::TextSize::from(rustc_token_raw.len as u32));
 }
 
 pub(crate) fn check_lexing(src: &str, expect: &str) {

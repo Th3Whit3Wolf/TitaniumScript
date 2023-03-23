@@ -1,3 +1,3 @@
-b'' b'x' b"foo" br""
-b''suf b""ix br""br
+b'' b'x' b"foo"
+b'' b""
 b'\n' b'\\' b'\'' b'hello'

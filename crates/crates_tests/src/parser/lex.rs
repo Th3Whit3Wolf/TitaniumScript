@@ -124,62 +124,6 @@ mod err {
         check("lexer/err/unclosed_nested_block_comment_partially");
     }
     #[test]
-    fn unclosed_raw_byte_string_at_eof() {
-        check("lexer/err/unclosed_raw_byte_string_at_eof");
-    }
-    #[test]
-    fn unclosed_raw_byte_string_with_ascii_escape() {
-        check("lexer/err/unclosed_raw_byte_string_with_ascii_escape");
-    }
-    #[test]
-    fn unclosed_raw_byte_string_with_ferris() {
-        check("lexer/err/unclosed_raw_byte_string_with_ferris");
-    }
-    #[test]
-    fn unclosed_raw_byte_string_with_slash() {
-        check("lexer/err/unclosed_raw_byte_string_with_slash");
-    }
-    #[test]
-    fn unclosed_raw_byte_string_with_slash_n() {
-        check("lexer/err/unclosed_raw_byte_string_with_slash_n");
-    }
-    #[test]
-    fn unclosed_raw_byte_string_with_space() {
-        check("lexer/err/unclosed_raw_byte_string_with_space");
-    }
-    #[test]
-    fn unclosed_raw_byte_string_with_unicode_escape() {
-        check("lexer/err/unclosed_raw_byte_string_with_unicode_escape");
-    }
-    #[test]
-    fn unclosed_raw_string_at_eof() {
-        check("lexer/err/unclosed_raw_string_at_eof");
-    }
-    #[test]
-    fn unclosed_raw_string_with_ascii_escape() {
-        check("lexer/err/unclosed_raw_string_with_ascii_escape");
-    }
-    #[test]
-    fn unclosed_raw_string_with_ferris() {
-        check("lexer/err/unclosed_raw_string_with_ferris");
-    }
-    #[test]
-    fn unclosed_raw_string_with_slash() {
-        check("lexer/err/unclosed_raw_string_with_slash");
-    }
-    #[test]
-    fn unclosed_raw_string_with_slash_n() {
-        check("lexer/err/unclosed_raw_string_with_slash_n");
-    }
-    #[test]
-    fn unclosed_raw_string_with_space() {
-        check("lexer/err/unclosed_raw_string_with_space");
-    }
-    #[test]
-    fn unclosed_raw_string_with_unicode_escape() {
-        check("lexer/err/unclosed_raw_string_with_unicode_escape");
-    }
-    #[test]
     fn unclosed_string_at_eof() {
         check("lexer/err/unclosed_string_at_eof");
     }
@@ -210,22 +154,6 @@ mod err {
     #[test]
     fn unclosed_string_with_unicode_escape() {
         check("lexer/err/unclosed_string_with_unicode_escape");
-    }
-    #[test]
-    fn unstarted_raw_byte_string_at_eof() {
-        check("lexer/err/unstarted_raw_byte_string_at_eof");
-    }
-    #[test]
-    fn unstarted_raw_byte_string_with_ascii() {
-        check("lexer/err/unstarted_raw_byte_string_with_ascii");
-    }
-    #[test]
-    fn unstarted_raw_string_at_eof() {
-        check("lexer/err/unstarted_raw_string_at_eof");
-    }
-    #[test]
-    fn unstarted_raw_string_with_ascii() {
-        check("lexer/err/unstarted_raw_string_with_ascii");
     }
 }
 
@@ -265,10 +193,7 @@ mod ok {
     fn raw_ident() {
         check("lexer/ok/raw_ident");
     }
-    #[test]
-    fn raw_strings() {
-        check("lexer/ok/raw_strings");
-    }
+
     #[test]
     fn single_line_comments() {
         check("lexer/ok/single_line_comments");

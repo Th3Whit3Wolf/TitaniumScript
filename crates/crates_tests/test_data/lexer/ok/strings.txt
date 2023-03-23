@@ -1,7 +1,5 @@
 STRING "\"hello\""
 WHITESPACE " "
-STRING "r\"world\""
-WHITESPACE " "
 STRING "\"\\n\\\"\\\\no escape\""
 WHITESPACE " "
 STRING "\"multi\nline\""

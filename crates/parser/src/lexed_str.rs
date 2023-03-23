@@ -304,35 +304,34 @@ impl<'a> Converter<'a> {
                     err = "Missing trailing `\"` symbol to terminate the byte string literal";
                 }
                 BYTE_STRING
-            }
-            lexer::LiteralKind::RawStr { n_start_hashes, n_end_hashes, bad_char } => {
-                if n_start_hashes > 255 {
-                    err = "Too many `#` symbols: raw strings may be delimited by up to 255 `#` symbols";
-                }
-                if bad_char.is_some() {
-                    err = "Missing `\"` symbol after `#` symbols to begin the raw string literal";
-                }
-                if n_start_hashes != n_end_hashes {
-                    err =
-                        "Missing trailing `\"` with `#` symbols to terminate the raw string literal"
-                }
+            } // lexer::LiteralKind::RawStr { n_start_hashes, n_end_hashes, bad_char } => {
+              //     if n_start_hashes > 255 {
+              //         err = "Too many `#` symbols: raw strings may be delimited by up to 255 `#` symbols";
+              //     }
+              //     if bad_char.is_some() {
+              //         err = "Missing `\"` symbol after `#` symbols to begin the raw string literal";
+              //     }
+              //     if n_start_hashes != n_end_hashes {
+              //         err =
+              //             "Missing trailing `\"` with `#` symbols to terminate the raw string literal"
+              //     }
 
-                STRING
-            }
-            lexer::LiteralKind::RawByteStr { n_start_hashes, n_end_hashes, bad_char } => {
-                if n_start_hashes > 255 {
-                    err = "Too many `#` symbols: raw byte strings may be delimited by up to 255 `#` symbols";
-                }
-                if bad_char.is_some() {
-                    err = "Missing `\"` symbol after `#` symbols to begin the raw byte string literal";
-                }
-                if n_start_hashes != n_end_hashes {
-                    err =
-                        "Missing trailing `\"` with `#` symbols to terminate the raw byte string literal"
-                }
+              //     STRING
+              // }
+              // lexer::LiteralKind::RawByteStr { n_start_hashes, n_end_hashes, bad_char } => {
+              //     if n_start_hashes > 255 {
+              //         err = "Too many `#` symbols: raw byte strings may be delimited by up to 255 `#` symbols";
+              //     }
+              //     if bad_char.is_some() {
+              //         err = "Missing `\"` symbol after `#` symbols to begin the raw byte string literal";
+              //     }
+              //     if n_start_hashes != n_end_hashes {
+              //         err =
+              //             "Missing trailing `\"` with `#` symbols to terminate the raw byte string literal"
+              //     }
 
-                BYTE_STRING
-            }
+              //     BYTE_STRING
+              // }
         };
 
         let err = if err.is_empty() { None } else { Some(err) };
