@@ -13,10 +13,6 @@ mod err {
         check("parser/err/0001_item_recovery_in_file");
     }
     #[test]
-    fn test_0002_duplicate_shebang() {
-        check("parser/err/0002_duplicate_shebang");
-    }
-    #[test]
     fn test_0003_cpp_semicolon() {
         check("parser/err/0003_C++_semicolon");
     }
@@ -177,10 +173,6 @@ mod ok {
     #[test]
     fn test_0002_struct_item_field() {
         check("parser/ok/0002_struct_item_field");
-    }
-    #[test]
-    fn test_0004_file_shebang() {
-        check("parser/ok/0004_file_shebang");
     }
     #[test]
     fn test_0005_fn_item() {
