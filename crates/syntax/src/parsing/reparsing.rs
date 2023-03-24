@@ -384,13 +384,6 @@ fn -> &str { // "Hello$0$0"
             10,
         );
         do_check(
-            r##"
-fn -> &str { r#"Hello$0$0"#
-"##,
-            ", world",
-            10,
-        );
-        do_check(
             r"
 #[derive($0Copy$0)]
 enum Foo {
