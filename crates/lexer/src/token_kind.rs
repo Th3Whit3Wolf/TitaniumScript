@@ -41,13 +41,10 @@ pub enum TokenKind {
     ///
     /// See [LiteralKind] for more details.
     ///
-    #[regex("0b[_]?", |_| LiteralKind::Num { base: Base::Binary, empty_int: true })]
-    #[regex("0o[_]?", |_| LiteralKind::Num { base: Base::Octal, empty_int: true })]
-    #[regex("0x[_]?", |_| LiteralKind::Num { base: Base::Hexadecimal, empty_int: true })]
-    #[regex("0b[0-9]+[0-9_]*", |lex| LiteralKind::lex_num(lex, Base::Binary))]
-    #[regex("0o[0-9]+[0-9_]*", |lex| LiteralKind::lex_num(lex, Base::Octal))]
-    #[regex("0x[0-9a-fA-F]+[0-9a-fA-F_]*", |lex| LiteralKind::lex_num(lex, Base::Hexadecimal) )]
-    #[regex("[0-9][0-9_]*", |lex| LiteralKind::lex_num(lex, Base::Decimal) )]
+    #[regex("0b[0-9_]*", |lex| LiteralKind::lex_num(lex, Base::Binary))]
+    #[regex("0o[0-9_]*", |lex| LiteralKind::lex_num(lex, Base::Octal))]
+    #[regex("0x[0-9a-fA-F_]*", |lex| LiteralKind::lex_num(lex, Base::Hexadecimal) )]
+    #[regex("[0-9]+[0-9_]*", |lex| LiteralKind::lex_num(lex, Base::Decimal) )]
     #[regex("b'|'", LiteralKind::lex_single_quote)]
     #[regex("b\"|\"", LiteralKind::lex_double_quote)]
     Literal(LiteralKind),
@@ -207,9 +204,22 @@ pub enum LiteralKind {
 
 impl LiteralKind {
     fn lex_num(lex: &mut Lexer<TokenKind>, base: Base) -> Self {
+        let slice = lex.slice();
         let remaining = lex.remainder();
         let first_char = remaining.chars().nth(0);
         let second_char = remaining.chars().nth(1);
+
+        let empty = match base {
+            Base::Decimal => false,
+            Base::Binary | Base::Octal => {
+                let s = slice[2..slice.len()].replace('_', "");
+                s.len() == 0 || !s.chars().all(|x| x.is_ascii_digit())
+            }
+            Base::Hexadecimal => {
+                let s = slice[2..slice.len()].replace('_', "");
+                s.len() == 0 || !s.chars().all(|x| x.is_ascii_hexdigit())
+            }
+        };
 
         if let Some(first) = first_char {
             match first {
@@ -243,10 +253,10 @@ impl LiteralKind {
                     let empty_exponent = !eat_float_exponent(lex);
                     LiteralKind::Float { base, empty_exponent }
                 }
-                _ => LiteralKind::Num { base, empty_int: false },
+                _ => LiteralKind::Num { base, empty_int: empty },
             }
         } else {
-            LiteralKind::Num { base, empty_int: false }
+            LiteralKind::Num { base, empty_int: empty }
         }
     }
 
