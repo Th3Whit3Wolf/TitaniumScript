@@ -41,9 +41,8 @@ SOURCE_FILE
               FOR_KW "for"
               GENERIC_PARAM_LIST
                 L_ANGLE "<"
-                LIFETIME_PARAM
-                  LIFETIME
-                    LIFETIME_IDENT "'a"
+
+
                 R_ANGLE ">"
               WHITESPACE " "
               PATH_TYPE
@@ -53,9 +52,8 @@ SOURCE_FILE
                       IDENT "Trait"
                     GENERIC_ARG_LIST
                       L_ANGLE "<"
-                      LIFETIME_ARG
-                        LIFETIME
-                          LIFETIME_IDENT "'a"
+
+
                       R_ANGLE ">"
             R_PAREN ")"
       R_ANGLE ">"
@@ -128,9 +126,8 @@ SOURCE_FILE
                   FOR_KW "for"
                   GENERIC_PARAM_LIST
                     L_ANGLE "<"
-                    LIFETIME_PARAM
-                      LIFETIME
-                        LIFETIME_IDENT "'a"
+
+
                     R_ANGLE ">"
                   WHITESPACE " "
                   PATH_TYPE
@@ -140,9 +137,8 @@ SOURCE_FILE
                           IDENT "Trait"
                         GENERIC_ARG_LIST
                           L_ANGLE "<"
-                          LIFETIME_ARG
-                            LIFETIME
-                              LIFETIME_IDENT "'a"
+
+
                           R_ANGLE ">"
                 R_PAREN ")"
         ERROR

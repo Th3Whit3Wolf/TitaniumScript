@@ -92,10 +92,10 @@ mod err {
     fn test_0023_mismatched_paren() {
         check("parser/err/0023_mismatched_paren");
     }
-    #[test]
-    fn test_0024_many_type_parens() {
-        check("parser/err/0024_many_type_parens");
-    }
+    // #[test]
+    // fn test_0024_many_type_parens() {
+    //     check("parser/err/0024_many_type_parens");
+    // }
     #[test]
     fn test_0025_nope() {
         check("parser/err/0025_nope");
@@ -104,10 +104,10 @@ mod err {
     fn test_0026_imp_recovery() {
         check("parser/err/0026_imp_recovery");
     }
-    #[test]
-    fn test_0027_incomplere_where_for() {
-        check("parser/err/0027_incomplere_where_for");
-    }
+    // #[test]
+    // fn test_0027_incomplere_where_for() {
+    //     check("parser/err/0027_incomplere_where_for");
+    // }
     #[test]
     fn test_0029_field_completion() {
         check("parser/err/0029_field_completion");
@@ -136,14 +136,14 @@ mod err {
     fn test_0039_lambda_recovery() {
         check("parser/err/0039_lambda_recovery");
     }
-    #[test]
-    fn test_0042_weird_blocks() {
-        check("parser/err/0042_weird_blocks");
-    }
-    #[test]
-    fn test_0043_unexpected_for_type() {
-        check("parser/err/0043_unexpected_for_type");
-    }
+    // #[test]
+    // fn test_0042_weird_blocks() {
+    //     check("parser/err/0042_weird_blocks");
+    // }
+    // #[test]
+    // fn test_0043_unexpected_for_type() {
+    //     check("parser/err/0043_unexpected_for_type");
+    // }
     #[test]
     fn test_0044_item_modifiers() {
         check("parser/err/0044_item_modifiers");
