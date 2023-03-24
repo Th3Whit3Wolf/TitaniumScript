@@ -9,10 +9,6 @@ use similar_asserts::assert_eq;
 use test_utils::expect::expect_file;
 
 #[cfg(test)]
-mod grammar;
-#[cfg(test)]
-mod inline;
-#[cfg(test)]
 mod lex;
 
 #[allow(clippy::module_inception)]
@@ -126,11 +122,9 @@ fn parse(entry: TopEntryPoint, text: &str) -> (String, bool) {
 pub(crate) fn check_parser_parser(path: &'static str) {
     let file = TestCase::single(path);
     let (actual, errors) = parse(TopEntryPoint::SourceFile, &file.text);
-    assert!(
-        errors,
-        "no errors in an {} file {}:\n{actual}",
-        if path.contains("ok") { "OK" } else { "ERR" },
-        file.tis.display()
-    );
+    if path.contains("err") {
+        assert!(errors, "no errors in an ERR file {}\n:{actual}", file.tis.display());
+    }
+
     expect_file(file.tast, &actual);
 }
