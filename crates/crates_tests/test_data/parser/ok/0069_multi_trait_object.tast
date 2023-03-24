@@ -4,19 +4,11 @@ SOURCE_FILE
     WHITESPACE " "
     NAME
       IDENT "Foo"
-    GENERIC_PARAM_LIST
-      L_ANGLE "<"
-      LIFETIME_PARAM
-        LIFETIME
-          LIFETIME_IDENT "'a"
-      R_ANGLE ">"
     WHITESPACE " "
     EQ "="
     WHITESPACE " "
     REF_TYPE
       AMP "&"
-      LIFETIME
-        LIFETIME_IDENT "'a"
       WHITESPACE " "
       PAREN_TYPE
         L_PAREN "("
@@ -107,12 +99,6 @@ SOURCE_FILE
                     PATH_SEGMENT
                       NAME_REF
                         IDENT "Send"
-              WHITESPACE " "
-              PLUS "+"
-              WHITESPACE " "
-              TYPE_BOUND
-                LIFETIME
-                  LIFETIME_IDENT "'static"
           R_PAREN ")"
     SEMICOLON ";"
   WHITESPACE "\n"

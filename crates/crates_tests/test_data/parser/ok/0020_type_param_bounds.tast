@@ -41,8 +41,11 @@ SOURCE_FILE
         WHITESPACE " "
         TYPE_BOUND_LIST
           TYPE_BOUND
-            LIFETIME
-              LIFETIME_IDENT "'a"
+            PATH_TYPE
+              PATH
+                PATH_SEGMENT
+                  NAME_REF
+                    IDENT "a"
       R_ANGLE ">"
     SEMICOLON ";"
   WHITESPACE "\n"
@@ -60,8 +63,11 @@ SOURCE_FILE
         WHITESPACE " "
         TYPE_BOUND_LIST
           TYPE_BOUND
-            LIFETIME
-              LIFETIME_IDENT "'a"
+            PATH_TYPE
+              PATH
+                PATH_SEGMENT
+                  NAME_REF
+                    IDENT "a"
           WHITESPACE " "
           PLUS "+"
       WHITESPACE " "
@@ -82,14 +88,20 @@ SOURCE_FILE
         WHITESPACE " "
         TYPE_BOUND_LIST
           TYPE_BOUND
-            LIFETIME
-              LIFETIME_IDENT "'a"
+            PATH_TYPE
+              PATH
+                PATH_SEGMENT
+                  NAME_REF
+                    IDENT "a"
           WHITESPACE " "
           PLUS "+"
           WHITESPACE " "
           TYPE_BOUND
-            LIFETIME
-              LIFETIME_IDENT "'d"
+            PATH_TYPE
+              PATH
+                PATH_SEGMENT
+                  NAME_REF
+                    IDENT "d"
       WHITESPACE " "
       R_ANGLE ">"
     SEMICOLON ";"
@@ -108,14 +120,20 @@ SOURCE_FILE
         WHITESPACE " "
         TYPE_BOUND_LIST
           TYPE_BOUND
-            LIFETIME
-              LIFETIME_IDENT "'a"
+            PATH_TYPE
+              PATH
+                PATH_SEGMENT
+                  NAME_REF
+                    IDENT "a"
           WHITESPACE " "
           PLUS "+"
           WHITESPACE " "
           TYPE_BOUND
-            LIFETIME
-              LIFETIME_IDENT "'d"
+            PATH_TYPE
+              PATH
+                PATH_SEGMENT
+                  NAME_REF
+                    IDENT "d"
           WHITESPACE " "
           PLUS "+"
           WHITESPACE " "
@@ -197,8 +215,11 @@ SOURCE_FILE
           PLUS "+"
           WHITESPACE " "
           TYPE_BOUND
-            LIFETIME
-              LIFETIME_IDENT "'a"
+            PATH_TYPE
+              PATH
+                PATH_SEGMENT
+                  NAME_REF
+                    IDENT "a"
       R_ANGLE ">"
     SEMICOLON ";"
   WHITESPACE "\n"
@@ -232,27 +253,41 @@ SOURCE_FILE
       IDENT "K"
     GENERIC_PARAM_LIST
       L_ANGLE "<"
-      LIFETIME_PARAM
-        LIFETIME
-          LIFETIME_IDENT "'a"
+      TYPE_PARAM
+        NAME
+          IDENT "a"
         COLON ":"
         WHITESPACE " "
-        LIFETIME
-          LIFETIME_IDENT "'d"
+        TYPE_BOUND_LIST
+          TYPE_BOUND
+            PATH_TYPE
+              PATH
+                PATH_SEGMENT
+                  NAME_REF
+                    IDENT "d"
       COMMA ","
       WHITESPACE " "
-      LIFETIME_PARAM
-        LIFETIME
-          LIFETIME_IDENT "'d"
+      TYPE_PARAM
+        NAME
+          IDENT "d"
         COLON ":"
         WHITESPACE " "
-        LIFETIME
-          LIFETIME_IDENT "'a"
-        WHITESPACE " "
-        PLUS "+"
-        WHITESPACE " "
-        LIFETIME
-          LIFETIME_IDENT "'b"
+        TYPE_BOUND_LIST
+          TYPE_BOUND
+            PATH_TYPE
+              PATH
+                PATH_SEGMENT
+                  NAME_REF
+                    IDENT "a"
+          WHITESPACE " "
+          PLUS "+"
+          WHITESPACE " "
+          TYPE_BOUND
+            PATH_TYPE
+              PATH
+                PATH_SEGMENT
+                  NAME_REF
+                    IDENT "b"
       COMMA ","
       WHITESPACE " "
       TYPE_PARAM
@@ -262,14 +297,20 @@ SOURCE_FILE
         WHITESPACE " "
         TYPE_BOUND_LIST
           TYPE_BOUND
-            LIFETIME
-              LIFETIME_IDENT "'a"
+            PATH_TYPE
+              PATH
+                PATH_SEGMENT
+                  NAME_REF
+                    IDENT "a"
           WHITESPACE " "
           PLUS "+"
           WHITESPACE " "
           TYPE_BOUND
-            LIFETIME
-              LIFETIME_IDENT "'d"
+            PATH_TYPE
+              PATH
+                PATH_SEGMENT
+                  NAME_REF
+                    IDENT "d"
           WHITESPACE " "
           PLUS "+"
           WHITESPACE " "

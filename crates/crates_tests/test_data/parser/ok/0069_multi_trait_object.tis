@@ -1,6 +1,6 @@
-type Foo<'a> = &'a (dyn Send + Sync);
+type Foo = & (dyn Send + Sync);
 type Foo = *const (dyn Send + Sync);
-type Foo = fn() -> (dyn Send + 'static);
+type Foo = fn() -> (dyn Send);
 fn main() {
     let b = (&a) as &(dyn Add<Other, Output = Addable> + Other);
 }
