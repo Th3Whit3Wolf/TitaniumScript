@@ -31,7 +31,7 @@ impl TestCase {
 
         tis.set_extension("tis");
         let tast = tis.with_extension("tast");
-        let text = fs::read_to_string(&tis).unwrap();
+        let text = fs::read_to_string(&tis).unwrap().replace("\r\n", "\n");
 
         if !tis.is_file() {
             panic!("`file` {path}.tis doesn't exist")
@@ -130,9 +130,5 @@ pub(crate) fn check_parser_parser(path: &'static str) {
         assert!(errors, "no errors in an ERR file {}\n:{actual}", file.tis.display());
     }
 
-    if cfg!(target_os = "windows") {
-        expect_file(file.tast, &actual.replace("\n", "\r\n"))
-    } else {
-        expect_file(file.tast, &actual)
-    }
+    expect_file(file.tast, &actual)
 }
