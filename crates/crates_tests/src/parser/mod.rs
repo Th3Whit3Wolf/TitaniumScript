@@ -55,7 +55,7 @@ fn lex(text: &str) -> String {
 
         let error = error.map(|err| format!(" error: {err}")).unwrap_or_default();
         if cfg!(target_os = "windows") && kind == SyntaxKind::WHITESPACE {
-            writeln!(res, "{kind:?} {:?}{error}", text.replace("\r", "")).unwrap()
+            writeln!(res, "{kind:?} {:?}{error}", text.replace("\r", "\n")).unwrap()
         } else {
             writeln!(res, "{kind:?} {text:?}{error}").unwrap()
         }
@@ -130,5 +130,9 @@ pub(crate) fn check_parser_parser(path: &'static str) {
         assert!(errors, "no errors in an ERR file {}\n:{actual}", file.tis.display());
     }
 
-    expect_file(file.tast, &actual);
+    if cfg!(target_os = "windows") {
+        expect_file(file.tast, &actual.replace("\r\n", "\n"))
+    } else {
+        expect_file(file.tast, &actual)
+    }
 }
