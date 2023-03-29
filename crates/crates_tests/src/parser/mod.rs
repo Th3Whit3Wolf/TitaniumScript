@@ -131,7 +131,7 @@ pub(crate) fn check_parser_parser(path: &'static str) {
     }
 
     if cfg!(target_os = "windows") {
-        expect_file(file.tast, &actual.replace("\r", ""))
+        expect_file(file.tast, &actual.replace("\n", "\r\n"))
     } else {
         expect_file(file.tast, &actual)
     }
