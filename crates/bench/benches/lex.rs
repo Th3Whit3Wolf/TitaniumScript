@@ -2,8 +2,8 @@
 use criterion::*;
 
 use lexer::Lexer as logos_lexer;
-use rustc_lexer::tokenize as rustc_tokenize;
 use parser::{LexedStr, StrStep, TopEntryPoint};
+use rustc_lexer::tokenize as rustc_tokenize;
 const TXT: &str = r###"use crate::{utils, Error, Result};
 use regex::bytes::Regex;
 use std::{fs, fs::File, io::prelude::*, path::Path};
@@ -6546,7 +6546,7 @@ fn bench_lexer(c: &mut Criterion) {
             let lexed = LexedStr::new(TXT);
             let input = lexed.to_input();
             let output = TopEntryPoint::SourceFile.parse(&input);
-        
+
             let mut buf = String::new();
             //let mut errors = Vec::new();
             let mut indent = String::new();
