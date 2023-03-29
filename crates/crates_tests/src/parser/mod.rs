@@ -4,7 +4,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use ::parser::{LexedStr, StrStep, TopEntryPoint};
+use ::parser::{LexedStr, StrStep, SyntaxKind, TopEntryPoint};
 use similar_asserts::assert_eq;
 use test_utils::expect::expect_file;
 
@@ -54,7 +54,11 @@ fn lex(text: &str) -> String {
         let error = lexed.error(i);
 
         let error = error.map(|err| format!(" error: {err}")).unwrap_or_default();
-        writeln!(res, "{kind:?} {text:?}{error}").unwrap();
+        if cfg!(target_os = "windows") && kind == SyntaxKind::WHITESPACE {
+            writeln!(res, "{kind:?} {:?}{error}", text.replace("\r\n", "\n")).unwrap()
+        } else {
+            writeln!(res, "{kind:?} {text:?}{error}").unwrap()
+        }
     }
     res
 }
