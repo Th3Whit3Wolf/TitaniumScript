@@ -12,6 +12,7 @@ edition = "2021"
 criterion = "0.4"
 rustc_lexer = { version = "727.0.0", package = "rustc-ap-rustc_lexer" }
 lexer.workspace = true
+parser.workspace = true
 
 [[bench]]
 name = "lex"
