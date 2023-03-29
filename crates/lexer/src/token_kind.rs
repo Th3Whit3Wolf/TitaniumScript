@@ -206,18 +206,18 @@ impl LiteralKind {
     fn lex_num(lex: &mut Lexer<TokenKind>, base: Base) -> Self {
         let slice = lex.slice();
         let remaining = lex.remainder();
-        let first_char = remaining.chars().nth(0);
+        let first_char = remaining.chars().next();
         let second_char = remaining.chars().nth(1);
 
         let empty = match base {
             Base::Decimal => false,
             Base::Binary | Base::Octal => {
                 let s = slice[2..slice.len()].replace('_', "");
-                s.len() == 0 || !s.chars().all(|x| x.is_ascii_digit())
+                s.is_empty() || !s.chars().all(|x| x.is_ascii_digit())
             }
             Base::Hexadecimal => {
                 let s = slice[2..slice.len()].replace('_', "");
-                s.len() == 0 || !s.chars().all(|x| x.is_ascii_hexdigit())
+                s.is_empty() || !s.chars().all(|x| x.is_ascii_hexdigit())
             }
         };
 
@@ -231,9 +231,9 @@ impl LiteralKind {
                         if second != '.' && !is_id_start(second) {
                             lex.bump(1);
                             let mut empty_exponent = false;
-                            if second.is_digit(10) {
+                            if second.is_ascii_digit() {
                                 eat_decimal_digits(lex);
-                                if let Some(last_char) = lex.remainder().chars().nth(0) {
+                                if let Some(last_char) = lex.remainder().chars().next() {
                                     if last_char == 'e' || last_char == 'E' {
                                         lex.bump(1);
                                         empty_exponent = !eat_float_exponent(lex);
@@ -277,7 +277,7 @@ impl LiteralKind {
         if is_str {
             LiteralKind::Str { terminated }
         } else {
-            return LiteralKind::ByteStr { terminated };
+            LiteralKind::ByteStr { terminated }
         }
     }
 }

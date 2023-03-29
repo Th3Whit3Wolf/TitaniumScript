@@ -3,6 +3,7 @@ use criterion::*;
 
 use lexer::Lexer as logos_lexer;
 use rustc_lexer::tokenize as rustc_tokenize;
+use parser::{LexedStr, StrStep, TopEntryPoint};
 const TXT: &str = r###"use crate::{utils, Error, Result};
 use regex::bytes::Regex;
 use std::{fs, fs::File, io::prelude::*, path::Path};
@@ -6536,6 +6537,47 @@ fn bench_lexer(c: &mut Criterion) {
             while let Some(token) = lex.next() {
                 black_box(token);
             }
+        })
+    });
+
+    group.bench_function("Parser", |b| {
+        b.iter(|| {
+            let mut lex = logos_lexer::new(TXT);
+            let lexed = LexedStr::new(TXT);
+            let input = lexed.to_input();
+            let output = TopEntryPoint::SourceFile.parse(&input);
+        
+            let mut buf = String::new();
+            //let mut errors = Vec::new();
+            let mut indent = String::new();
+            let mut depth = 0;
+            let mut len = 0;
+            lexed.intersperse_trivia(&output, &mut |step| match step {
+                StrStep::Token { kind, text } => {
+                    //assert!(depth > 0);
+                    len += text.len();
+                    //writeln!(buf, "{indent}{kind:?} {text:?}").unwrap();
+                }
+                StrStep::Enter { kind } => {
+                    //assert!(depth > 0 || len == 0);
+                    depth += 1;
+                    //writeln!(buf, "{indent}{kind:?}").unwrap();
+                    indent.push_str("  ");
+                }
+                StrStep::Exit => {
+                    assert!(depth > 0);
+                    depth -= 1;
+                    indent.pop();
+                    indent.pop();
+                }
+                StrStep::Error { msg, pos } => {
+                    assert!(depth > 0);
+                    //errors.push(format!("error {pos}: {msg}\n"))
+                }
+            });
+            // while let Some(token) = lex.next() {
+            //     black_box(token);
+            // }
         })
     });
 
