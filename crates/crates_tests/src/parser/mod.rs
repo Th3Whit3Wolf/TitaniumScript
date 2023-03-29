@@ -55,7 +55,7 @@ fn lex(text: &str) -> String {
 
         let error = error.map(|err| format!(" error: {err}")).unwrap_or_default();
         if cfg!(target_os = "windows") && kind == SyntaxKind::WHITESPACE {
-            writeln!(res, "{kind:?} {:?}{error}", text.replace("\r\n", "\n")).unwrap()
+            writeln!(res, "{kind:?} {:?}{error}", text.replace("\r", "")).unwrap()
         } else {
             writeln!(res, "{kind:?} {text:?}{error}").unwrap()
         }
