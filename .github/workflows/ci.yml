@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3..5.0
+        uses: actions/checkout@v3.5.0
 
       - name: Cargo Cache
         uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
@@ -62,7 +62,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3..5.0
+        uses: actions/checkout@v3.5.0
 
       - name: Cargo Cache
         uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
