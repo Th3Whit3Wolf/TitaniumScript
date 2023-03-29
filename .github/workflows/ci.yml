@@ -22,13 +22,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3..5.0
 
       - name: Cargo Cache
         uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
         with:
           command: cache
-      
+
       - name: Install Rustup
         uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
         with:
@@ -52,16 +52,16 @@ jobs:
 
   badge:
     name: Generate Testing Badges
-    runs-on: 'ubuntu-latest'
+    runs-on: "ubuntu-latest"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3..5.0
 
       - name: Cargo Cache
         uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
         with:
           command: cache
-      
+
       - name: Install Rustup
         uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
         with:
@@ -70,7 +70,7 @@ jobs:
           target: ${{ matrix.target }}
           profile: default
           default: true
-  
+
       - name: Install nextest
         uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
         with:
@@ -99,13 +99,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3..5.0
 
       - name: Cargo Cache
         uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
         with:
           command: cache
-      
+
       - name: Install Rustup
         uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
         with:
@@ -114,7 +114,7 @@ jobs:
           target: ${{ matrix.target }}
           profile: default
           default: true
-  
+
       - name: Install nextest
         uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
         with:
@@ -126,4 +126,3 @@ jobs:
         with:
           command: cargo nextest
           args: run --workspace --bins --lib --tests --examples --no-fail-fast
-
