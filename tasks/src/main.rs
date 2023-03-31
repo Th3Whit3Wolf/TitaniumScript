@@ -13,6 +13,7 @@
 mod flags;
 mod badges;
 mod grammar;
+mod ci;
 
 use anyhow::bail;
 use std::{
@@ -29,7 +30,7 @@ fn main() -> anyhow::Result<()> {
 
     match flags.subcommand {
         flags::XtaskCmd::Badges(cmd) => cmd.run(sh),
-
+        flags::XtaskCmd::Ci(cmd) => cmd.run(sh),
         flags::XtaskCmd::Grammar(cmd) => cmd.run(sh),
         flags::XtaskCmd::FuzzTests(_) => run_fuzzer(sh),
     }

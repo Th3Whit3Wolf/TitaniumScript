@@ -24,4 +24,5 @@ proc-macro2 = "1.0.47"
 itertools = "0.10.5"
 colorgrad = "0.6.2"
 badge-maker = "0.3.1"
+quick-xml = "0.28.1"
 # Avoid adding more dependencies to this crate

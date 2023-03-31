@@ -8,6 +8,7 @@ xflags::xflags! {
         cmd fuzz-tests {}
         cmd grammar {}
         cmd badges {}
+        cmd ci {}
     }
 }
 
@@ -22,12 +23,15 @@ pub struct Xtask {
 #[derive(Debug)]
 pub enum XtaskCmd {
     Badges(Badges),
-
+    Ci(Ci),
     Grammar(Grammar),
     FuzzTests(FuzzTests),
 }
 #[derive(Debug)]
 pub struct Badges;
+
+#[derive(Debug)]
+pub struct Ci;
 
 #[derive(Debug)]
 pub struct Grammar;
