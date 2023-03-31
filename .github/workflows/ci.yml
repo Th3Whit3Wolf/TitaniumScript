@@ -82,10 +82,13 @@ jobs:
         uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
         with:
           command: cargo install
-          args: cargo-nextest
+          args: cargo-nextest cargo-llvm-cov
 
       - name: Test
         uses: FrancisRussell/ferrous-actions@v0.1.0-beta.2
         with:
-          command: cargo nextest
-          args: run --workspace --bins --lib --tests --examples --no-fail-fast
+          command: cargo llvm-cov
+          args: llvm-cov nextest --cobertura --output-path target/nextest/ci/coverage.xml --config-file ./.cargo/nextest.toml -P ci
+
+      - name: CI Tasks
+        run: cargo run --package task --bin task -- ci
