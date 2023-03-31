@@ -1,5 +1,3 @@
-use std::ops::Deref;
-
 use super::parse_data::{CoverageFileAnalysis, CoverageResult, NextestResult, NextestTest};
 
 pub trait HTMLTable {
@@ -9,7 +7,7 @@ pub trait HTMLTable {
 
 impl HTMLTable for NextestTest {
     fn to_th(&self) -> String {
-        format!("<tr><th>Test</th><th>Time</th><th>Status</th></tr>")
+        "<tr><th>Test</th><th>Time</th><th>Status</th></tr>".to_string()
     }
     fn to_td(&self) -> String {
         format!(
@@ -23,7 +21,7 @@ impl HTMLTable for NextestTest {
 
 impl HTMLTable for CoverageFileAnalysis {
     fn to_th(&self) -> String {
-        format!("<tr><th>File</th><th>Coverage</th></tr>")
+        "<tr><th>File</th><th>Coverage</th></tr>".to_string()
     }
     fn to_td(&self) -> String {
         format!("<tr><td width=\"75%\">{}</td><td>{}s</td></tr>", self.path, self.line_coverage,)
@@ -38,24 +36,6 @@ fn summary_details_html(summary: String, details: String) -> String {
 </details>"
     )
 }
-
-// fn html_table<T: HTMLTable>(t: Vec<&T>) -> String {
-//     if !t.is_empty() {
-//         let header = t[0].to_th();
-//         let mut rows = String::new();
-//         for row in t {
-//             rows.push_str(&row.to_td())
-//         }
-//         format!(
-//             "<table>
-//             {header}
-//             {rows}
-//             </table>",
-//         )
-//     } else {
-//         String::new()
-//     }
-// }
 
 fn html_table<T: HTMLTable>(t: Vec<T>) -> String {
     if !t.is_empty() {
