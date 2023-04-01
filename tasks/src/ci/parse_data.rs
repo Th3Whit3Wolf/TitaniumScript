@@ -3,7 +3,7 @@ use std::{fs, path::Path};
 use quick_xml::events::Event;
 use quick_xml::reader::Reader;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct NextestOverview {
     pub(crate) count: u64,
     pub(crate) time: f64,
@@ -11,13 +11,13 @@ pub(crate) struct NextestOverview {
     pub(crate) failures: u64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct NextestSuite {
     pub(crate) name: String,
-    // pub(crate) count: u64,
+    pub(crate) count: u64,
     // pub(crate) disabled: u64,
     // pub(crate) errors: u64,
-    // pub(crate) failures: u64,
+    pub(crate) failures: u64,
 }
 
 #[derive(Debug, Clone)]
@@ -125,7 +125,7 @@ where
                     });
 
                     // suites.push(NextestSuite { name, count, disabled, errors, failures });
-                    suites.push(NextestSuite { name });
+                    suites.push(NextestSuite { name, count, failures });
                 }
 
                 b"testcase" => {

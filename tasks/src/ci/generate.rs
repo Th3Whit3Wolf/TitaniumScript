@@ -1,8 +1,24 @@
-use super::parse_data::{CoverageFileAnalysis, CoverageResult, NextestResult, NextestTest};
+use super::parse_data::{
+    CoverageFileAnalysis, CoverageResult, NextestResult, NextestSuite, NextestTest,
+};
 
 pub(crate) trait HTMLTable {
     fn to_th(&self) -> String;
     fn to_td(&self) -> String;
+}
+
+impl HTMLTable for NextestSuite {
+    fn to_th(&self) -> String {
+        "<tr><th>Test Suite</th><th>Passed</th><th>Failed</th></tr>".to_string()
+    }
+    fn to_td(&self) -> String {
+        format!(
+            "<tr><td width=\"75%\">{}</td><td>{}s</td><td>{}</td></tr>",
+            self.name,
+            self.count - self.failures,
+            self.failures
+        )
+    }
 }
 
 impl HTMLTable for NextestTest {
@@ -59,6 +75,8 @@ fn test_html(data: NextestResult) -> String {
     let suites_summary = format!("<h3>Suites ({}) Details</h3>", data.suites.len());
     let mut suites_details = String::new();
 
+    let suites_table = html_table(data.suites.clone());
+
     for suite in data.suites {
         let tests: Vec<NextestTest> =
             data.tests.iter().filter(|x| x.suite == suite.name).cloned().collect();
@@ -69,10 +87,11 @@ fn test_html(data: NextestResult) -> String {
     }
 
     format!(
-        "## {} tests ran in {}s with {} failures\n\n{}",
+        "<h2>{} tests ran in {} seconds with {} failures</h2>{}{}",
         data.overview.count,
         data.overview.time,
         data.overview.failures,
+        suites_table,
         summary_details_html(suites_summary, suites_details)
     )
 }
@@ -88,5 +107,21 @@ fn coverage_html(data: CoverageResult) -> String {
 }
 
 pub(crate) fn gen_summary(test_data: NextestResult, coverage_data: CoverageResult) -> String {
-    format!("{}\n\n{}", test_html(test_data), coverage_html(coverage_data))
+    let header_brief = test_data.overview.clone();
+
+    let test_summary =
+        summary_details_html(String::from("<h3>Test Results</h3>"), test_html(test_data));
+    let coverage_summary = summary_details_html(
+        String::from("<h3>Coverage Reports</h3>"),
+        coverage_html(coverage_data),
+    );
+
+    format!(
+        "<h2>{} tests ran in {} seconds with {} failures</h2>{}{}",
+        header_brief.count,
+        header_brief.time,
+        header_brief.failures,
+        test_summary,
+        coverage_summary
+    )
 }
