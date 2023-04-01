@@ -9,7 +9,7 @@ use crate::{
     flags,
 };
 
-use std::{env, fs::File, io::prelude::*, path::Path};
+use std::{env, fs::OpenOptions, io::prelude::*, path::Path};
 use xshell::Shell;
 
 impl flags::Ci {
@@ -23,8 +23,10 @@ impl flags::Ci {
         let coverage_results = parse_coverage(coverage_path)?;
 
         let html = gen_summary(test_results, coverage_results);
-        let mut file = File::create("$GITHUB_STEP_SUMMARY")?;
+        let mut file =
+            OpenOptions::new().read(true).append(true).create(true).open("$GITHUB_STEP_SUMMARY")?;
         file.write_all(html.as_bytes())?;
+        file.sync_all()?;
         Ok(())
     }
 }
