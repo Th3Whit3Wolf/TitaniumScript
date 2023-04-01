@@ -9,7 +9,7 @@ use crate::{
     flags,
 };
 
-use std::{env, path::Path};
+use std::{env, fs::File, io::prelude::*, path::Path};
 use xshell::Shell;
 
 impl flags::Ci {
@@ -23,7 +23,8 @@ impl flags::Ci {
         let coverage_results = parse_coverage(coverage_path)?;
 
         let html = gen_summary(test_results, coverage_results);
-        env::set_var("GITHUB_STEP_SUMMARY", html);
+        let mut file = File::create("$GITHUB_STEP_SUMMARY")?;
+        file.write_all(html.as_bytes())?;
         Ok(())
     }
 }
