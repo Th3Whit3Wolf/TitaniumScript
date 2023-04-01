@@ -1,6 +1,6 @@
 use super::parse_data::{CoverageFileAnalysis, CoverageResult, NextestResult, NextestTest};
 
-pub trait HTMLTable {
+pub(crate) trait HTMLTable {
     fn to_th(&self) -> String;
     fn to_td(&self) -> String;
 }
@@ -87,6 +87,6 @@ fn coverage_html(data: CoverageResult) -> String {
     summary_details_html(summary, details)
 }
 
-pub fn gen_summary(test_data: NextestResult, coverage_data: CoverageResult) -> String {
+pub(crate) fn gen_summary(test_data: NextestResult, coverage_data: CoverageResult) -> String {
     format!("{}\n\n{}", test_html(test_data), coverage_html(coverage_data))
 }

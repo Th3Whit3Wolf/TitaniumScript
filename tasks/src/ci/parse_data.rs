@@ -29,7 +29,7 @@ pub(crate) struct NextestTest {
 }
 
 #[derive(Debug)]
-pub struct NextestResult {
+pub(crate) struct NextestResult {
     pub(crate) overview: NextestOverview,
     pub(crate) suites: Vec<NextestSuite>,
     pub(crate) tests: Vec<NextestTest>,
@@ -55,7 +55,7 @@ pub(crate) struct CoverageFileAnalysis {
 }
 
 #[derive(Debug)]
-pub struct CoverageResult {
+pub(crate) struct CoverageResult {
     pub(crate) overview: CoverageOverview,
     pub(crate) files: Vec<CoverageFileAnalysis>,
 }
