@@ -72,28 +72,10 @@ fn html_table<T: HTMLTable>(t: Vec<T>) -> String {
 }
 
 fn test_html(data: NextestResult) -> String {
-    let suites_summary = format!("<h3>Suites ({}) Details</h3>", data.suites.len());
-    let mut suites_details = String::new();
+    let suites_table = html_table(data.suites);
+    let tests_summary = summary_details_html(String::from("Test Details"), html_table(data.tests));
 
-    let suites_table = html_table(data.suites.clone());
-
-    for suite in data.suites {
-        let tests: Vec<NextestTest> =
-            data.tests.iter().filter(|x| x.suite == suite.name).cloned().collect();
-        let inner_summary = format!("<h4>{} ({})</h4>", suite.name, tests.len());
-        let inner_details = html_table(tests);
-
-        suites_details.push_str(&summary_details_html(inner_summary, inner_details))
-    }
-
-    format!(
-        "<h2>{} tests ran in {} seconds with {} failures</h2>{}{}",
-        data.overview.count,
-        data.overview.time,
-        data.overview.failures,
-        suites_table,
-        summary_details_html(suites_summary, suites_details)
-    )
+    format!("{}{}", suites_table, tests_summary)
 }
 
 fn coverage_html(data: CoverageResult) -> String {
