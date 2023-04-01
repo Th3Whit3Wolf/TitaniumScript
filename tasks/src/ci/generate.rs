@@ -40,7 +40,7 @@ impl HTMLTable for CoverageFileAnalysis {
         "<tr><th>File</th><th>Coverage</th></tr>".to_string()
     }
     fn to_td(&self) -> String {
-        format!("<tr><td width=\"75%\">{}</td><td>{:.2}%</td></tr>", self.path, self.line_coverage,)
+        format!("<tr><td width=\"75%\"><a href=\"https://raw.githubusercontent.com/Th3Whit3Wolf/TitaniumScript/main{}\">{}</a></td><td>{:.2}%</td></tr>", self.path, self.path, self.line_coverage,)
     }
 }
 
