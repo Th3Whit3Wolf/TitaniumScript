@@ -1,5 +1,6 @@
-pub mod parse_data;
-pub mod generate;
+mod parse_data;
+mod generate;
+
 use crate::{
     ci::{
         generate::gen_summary,

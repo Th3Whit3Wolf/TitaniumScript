@@ -4,63 +4,63 @@ use quick_xml::events::Event;
 use quick_xml::reader::Reader;
 
 #[derive(Debug)]
-pub struct NextestOverview {
-    pub count: u64,
-    pub time: f64,
-    pub errors: u64,
-    pub failures: u64,
+pub(crate) struct NextestOverview {
+    pub(crate) count: u64,
+    pub(crate) time: f64,
+    pub(crate) errors: u64,
+    pub(crate) failures: u64,
 }
 
 #[derive(Debug)]
-pub struct NextestSuite {
-    pub name: String,
-    pub count: u64,
-    pub disabled: u64,
-    pub errors: u64,
-    pub failures: u64,
+pub(crate) struct NextestSuite {
+    pub(crate) name: String,
+    // pub(crate) count: u64,
+    // pub(crate) disabled: u64,
+    // pub(crate) errors: u64,
+    // pub(crate) failures: u64,
 }
 
 #[derive(Debug, Clone)]
-pub struct NextestTest {
-    pub name: String,
-    pub suite: String,
-    pub time: f64,
-    pub failure: bool,
+pub(crate) struct NextestTest {
+    pub(crate) name: String,
+    pub(crate) suite: String,
+    pub(crate) time: f64,
+    pub(crate) failure: bool,
 }
 
 #[derive(Debug)]
 pub struct NextestResult {
-    pub overview: NextestOverview,
-    pub suites: Vec<NextestSuite>,
-    pub tests: Vec<NextestTest>,
+    pub(crate) overview: NextestOverview,
+    pub(crate) suites: Vec<NextestSuite>,
+    pub(crate) tests: Vec<NextestTest>,
 }
 
 #[derive(Debug)]
-pub struct CoverageOverview {
-    pub branches_covered: u64,
-    pub branches_total: u64,
-    pub branch_coverage: u64,
-    pub complexity: u64,
-    pub lines_covered: u64,
-    pub lines_total: u64,
-    pub line_coverage: f64,
+pub(crate) struct CoverageOverview {
+    pub(crate) branches_covered: u64,
+    pub(crate) branches_total: u64,
+    pub(crate) branch_coverage: u64,
+    pub(crate) complexity: u64,
+    pub(crate) lines_covered: u64,
+    pub(crate) lines_total: u64,
+    pub(crate) line_coverage: f64,
 }
 
 #[derive(Debug)]
-pub struct CoverageFileAnalysis {
-    pub path: String,
-    pub branch_coverage: u64,
-    pub complexity: u64,
-    pub line_coverage: f64,
+pub(crate) struct CoverageFileAnalysis {
+    pub(crate) path: String,
+    // pub(crate) branch_coverage: u64,
+    // pub(crate) complexity: u64,
+    pub(crate) line_coverage: f64,
 }
 
 #[derive(Debug)]
 pub struct CoverageResult {
-    pub overview: CoverageOverview,
-    pub files: Vec<CoverageFileAnalysis>,
+    pub(crate) overview: CoverageOverview,
+    pub(crate) files: Vec<CoverageFileAnalysis>,
 }
 
-pub fn parse_junit<P>(junit_path: P) -> anyhow::Result<NextestResult>
+pub(crate) fn parse_junit<P>(junit_path: P) -> anyhow::Result<NextestResult>
 where
     P: AsRef<Path>,
 {
@@ -124,7 +124,8 @@ where
                         }
                     });
 
-                    suites.push(NextestSuite { name, count, disabled, errors, failures });
+                    // suites.push(NextestSuite { name, count, disabled, errors, failures });
+                    suites.push(NextestSuite { name });
                 }
 
                 b"testcase" => {
@@ -171,7 +172,7 @@ where
     Ok(NextestResult { overview, suites, tests })
 }
 
-pub fn parse_coverage<P>(coverage_path: P) -> anyhow::Result<CoverageResult>
+pub(crate) fn parse_coverage<P>(coverage_path: P) -> anyhow::Result<CoverageResult>
 where
     P: AsRef<Path>,
 {
@@ -257,8 +258,8 @@ where
 
                     files.push(CoverageFileAnalysis {
                         path,
-                        branch_coverage,
-                        complexity,
+                        // branch_coverage,
+                        // complexity,
                         line_coverage,
                     });
                 }
