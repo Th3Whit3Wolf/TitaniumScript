@@ -23,7 +23,7 @@ impl flags::Ci {
         let coverage_results = parse_coverage(coverage_path)?;
 
         let html = gen_summary(test_results, coverage_results);
-        match env::var("$GITHUB_STEP_SUMMARY") {
+        match env::var("GITHUB_STEP_SUMMARY") {
             Ok(summary_path) => {
                 let mut file =
                     OpenOptions::new().read(true).append(true).create(true).open(summary_path)?;
