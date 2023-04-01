@@ -23,10 +23,18 @@ impl flags::Ci {
         let coverage_results = parse_coverage(coverage_path)?;
 
         let html = gen_summary(test_results, coverage_results);
-        let mut file =
-            OpenOptions::new().read(true).append(true).create(true).open("$GITHUB_STEP_SUMMARY")?;
-        file.write_all(html.as_bytes())?;
-        file.sync_all()?;
+        match env::var("$GITHUB_STEP_SUMMARY") {
+            Ok(summary_path) => {
+                let mut file =
+                    OpenOptions::new().read(true).append(true).create(true).open(summary_path)?;
+                file.write_all(html.as_bytes())?;
+                file.sync_all()?;
+            }
+            Err(e) => {
+                eprintln!("Unable to find github step summary env. {e}");
+            }
+        }
+
         Ok(())
     }
 }
