@@ -249,7 +249,7 @@ where
                                 b"line-rate" => line_coverage = val.parse::<f64>().unwrap() * 100.0,
                                 b"complexity" => complexity = val.parse::<u64>().unwrap(),
                                 b"filename" => {
-                                    path = val.split("titaniumscript").last().unwrap().to_owned();
+                                    path = val.split("TitaniumScript").last().unwrap().to_owned();
                                 }
                                 _ => (),
                             }

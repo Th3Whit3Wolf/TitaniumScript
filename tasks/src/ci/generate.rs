@@ -40,7 +40,7 @@ impl HTMLTable for CoverageFileAnalysis {
         "<tr><th>File</th><th>Coverage</th></tr>".to_string()
     }
     fn to_td(&self) -> String {
-        format!("<tr><td width=\"75%\">{}</td><td>{}s</td></tr>", self.path, self.line_coverage,)
+        format!("<tr><td width=\"75%\">{}</td><td>{:.2}%</td></tr>", self.path, self.line_coverage,)
     }
 }
 
